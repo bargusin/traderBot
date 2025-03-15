@@ -12,6 +12,8 @@ jar {
 }
 
 dependencies {
+    implementation(platform("ru.tinkoff.piapi:java-sdk-core:1.27"))
+
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 }
