@@ -9,10 +9,13 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboard;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.rapidcoder.trader.bot.handler.KeyboardManager;
 
 abstract class ServiceCommand extends BotCommand {
 
     private static final Logger logger = LoggerFactory.getLogger(ServiceCommand.class);
+
+    protected KeyboardManager keyboardManager = KeyboardManager.getKeyboardManager();
 
     ServiceCommand(String identifier, String description) {
         super(identifier, description);
