@@ -1,10 +1,12 @@
 package ru.rapidcoder.trader.bot;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -47,16 +49,21 @@ public class Bot extends TelegramLongPollingCommandBot {
         }
     }
 
-    private void sendEditMessage(Long chatId, Integer messageId, InlineKeyboardMarkup keyboardMarkup) {
-        EditMessageReplyMarkup answer = new EditMessageReplyMarkup();
-        answer.setMessageId(messageId);
-        answer.setChatId(chatId);
-        answer.setReplyMarkup(keyboardMarkup);
+    private void sendEditMessage(Long chatId, Integer messageId, String text, InlineKeyboardMarkup keyboardMarkup) {
+        if (!StringUtils.isEmpty(text)) {
+            EditMessageText messageText = EditMessageText.builder().chatId(chatId).messageId(messageId).text(text).build();
+            try {
+                execute(messageText);
+            } catch (TelegramApiException e) {
+                logger.error(e.getMessage(), e);
+            }
+        }
 
+        EditMessageReplyMarkup messageReplyMarkup = EditMessageReplyMarkup.builder().messageId(messageId).chatId(chatId).replyMarkup(keyboardMarkup).build();
         // Необходимо поместить в стэк текущую клавиатуру
         keyboardManager.save(chatId, keyboardMarkup);
         try {
-            execute(answer);
+            execute(messageReplyMarkup);
         } catch (TelegramApiException e) {
             logger.error(e.getMessage(), e);
         }
@@ -74,11 +81,7 @@ public class Bot extends TelegramLongPollingCommandBot {
         } else if (update.hasCallbackQuery()) {
             Message msg = (Message) update.getCallbackQuery().getMessage();
             String result = handlerExcecutor.execute(update.getCallbackQuery().getData());
-            if (result == null) {
-                sendEditMessage(msg.getChatId(), msg.getMessageId(), keyboardManager.get(msg.getChatId()));
-            } else {
-                sendMessage(msg.getChatId(), result);
-            }
+            sendEditMessage(msg.getChatId(), msg.getMessageId(), result, keyboardManager.get(msg.getChatId()));
         }
     }
 }

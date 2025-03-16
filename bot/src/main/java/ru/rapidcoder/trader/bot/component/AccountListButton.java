@@ -2,9 +2,9 @@ package ru.rapidcoder.trader.bot.component;
 
 public class AccountListButton extends MenuItemButton {
 
-    private static String TEXT = "Список счетов";
+    private static final String TEXT = "Список счетов";
 
-    private static String CALLBACK_DATA = "getAccountList";
+    private static final String CALLBACK_DATA = "getAccountList";
 
     public AccountListButton() {
         setText(TEXT);
@@ -13,6 +13,10 @@ public class AccountListButton extends MenuItemButton {
 
     @Override
     public String execute() {
-        return "Список счетов...";
+        return "Параметры счета....";
+    }
+
+    public  String getCallbackData() {
+        return CALLBACK_DATA;
     }
 }

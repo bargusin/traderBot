@@ -1,9 +1,5 @@
 apply plugin: 'java'
 
-repositories {
-    mavenCentral()
-}
-
 dependencies {
     implementation project(':core')
     implementation("org.telegram:telegrambots:6.9.7.1")
