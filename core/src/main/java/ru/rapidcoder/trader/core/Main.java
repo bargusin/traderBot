@@ -1,9 +1,8 @@
-package ru.rapidcoder.traderbot;
+package ru.rapidcoder.trader.core;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.tinkoff.piapi.contract.v1.Account;
-import ru.tinkoff.piapi.contract.v1.MoneyValue;
 import ru.tinkoff.piapi.core.InvestApi;
 
 public class Main {
@@ -35,8 +34,10 @@ public class Main {
         logger.info("тариф должен быть sandbox. фактический тариф: {}", sandboxApi.getUserService().getInfoSync().getTariff());
 
         //пополняем счет песочницы на 10_000 рублей и 10_000 долларов
-        sandboxApi.getSandboxService().payIn(mainAccount.getId(), MoneyValue.newBuilder().setUnits(10000).setCurrency("RUB").build());
-        sandboxApi.getSandboxService().payIn(mainAccount.getId(), MoneyValue.newBuilder().setUnits(10000).setCurrency("USD").build());
+        /*
+        sandboxApi.getSandboxService().payIn(mainAccount.getId(), MoneyValue.newBuilder().setUnits(1000).setCurrency("RUB").build());
+        sandboxApi.getSandboxService().payIn(mainAccount.getId(), MoneyValue.newBuilder().setUnits(1000).setCurrency("USD").build());
+        */
 
         getPortfolioExample(sandboxApi);
     }
@@ -54,7 +55,7 @@ public class Main {
         logger.info("общая стоимость фондов в портфеле {}", totalAmountEtf);
 
         var totalAmountCurrencies = portfolio.getTotalAmountCurrencies();
-        logger.info("общая стоимость валют в портфеле {}", totalAmountCurrencies);
+        logger.info("общая стоимость валют в портфеле {}", totalAmountCurrencies.getValue());
 
         var totalAmountFutures = portfolio.getTotalAmountFutures();
         logger.info("общая стоимость фьючерсов в портфеле {}", totalAmountFutures);
