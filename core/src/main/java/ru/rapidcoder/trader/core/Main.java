@@ -1,26 +1,46 @@
 package ru.rapidcoder.trader.core;
 
+import com.google.protobuf.Timestamp;
+import com.google.type.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.tinkoff.piapi.contract.v1.Account;
 import ru.tinkoff.piapi.core.InvestApi;
 
+import java.time.DateTimeException;
+import java.util.Date;
+
 public class Main {
 
+    public static final String SANDBOX_TOKEN = ResourcesAdapter.getProperties("trading.properties").get("sandboxToken").toString();
+    public static final String PRODUCTION_TOKEN = ResourcesAdapter.getProperties("trading.properties").get("productionToken").toString();
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         System.out.println("Hello, World!");
         //Можно создать экземпляр sandbox - тогда все вызовы будут переадресованы в песочницу
-        InvestApi sandboxApi = InvestApi.createSandbox("t.9gvL7dnBDlI7Ty8T3i_s4t8AaKo9KknN5ER-DCMc291I2hu6CuZ4fCEX4TgYOPn0fXWZ43iT9hvSqaun6Tx0TA");
+//        InvestApi sandboxApi = InvestApi.createSandbox(PRODUCTION_TOKEN);
+//        sandboxServiceExample(sandboxApi);
 
-        sandboxServiceExample(sandboxApi);
+        InvestApi productionApi = InvestApi.create(PRODUCTION_TOKEN);
+        productionServiceExample(productionApi);
+    }
+
+    private static void productionServiceExample(InvestApi api) {
+        var accounts = api.getUserService().getAccountsSync();
+        for (Account account : accounts) {
+            logger.info("Production account id: {} ({})", account.getName(), account.getAccessLevel());
+
+            var portfolio = api.getOperationsService().getPortfolioSync(account.getId());
+            var totalAmountShares = portfolio.getTotalAmountShares();
+            logger.info("Общая стоимость акций в портфеле {} ({})", totalAmountShares.getValue(), totalAmountShares.getCurrency());
+        }
     }
 
     private static void sandboxServiceExample(InvestApi sandboxApi) {
         //Открываем новый счет в песочнице
-        var accountId = sandboxApi.getSandboxService().openAccountSync();
-        logger.info("открыт новый аккаунт в песочнице {}", accountId);
+//        var accountId = sandboxApi.getSandboxService().openAccountSync();
+//        logger.info("открыт новый аккаунт в песочнице {}", accountId);
 
         //В sandbox режиме можно делать запросы в те же методы, что и в обычном API
         //Поэтому не придется писать отдельный код для песочницы, чтоб проверить свою стратегию
@@ -73,10 +93,7 @@ public class Main {
             var quantity = position.getQuantity();
             var currentPrice = position.getCurrentPrice();
             var expectedYield = position.getExpectedYield();
-            logger.info(
-                    "позиция с figi: {}, количество инструмента: {}, текущая цена инструмента: {}, текущая расчитанная " +
-                            "доходность: {}",
-                    figi, quantity, currentPrice, expectedYield);
+            logger.info("позиция с figi: {}, количество инструмента: {}, текущая цена инструмента: {}, текущая расчитанная " + "доходность: {}", figi, quantity, currentPrice, expectedYield);
         }
 
     }

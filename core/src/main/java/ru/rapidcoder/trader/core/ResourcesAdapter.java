@@ -1,4 +1,4 @@
-package ru.rapidcoder.trader.bot;
+package ru.rapidcoder.trader.core;
 
 import java.io.FileInputStream;
 import java.util.Objects;
@@ -6,10 +6,10 @@ import java.util.Properties;
 
 public class ResourcesAdapter {
 
-    protected static Properties getProperties() {
+    public static Properties getProperties(String fileProperties) {
         Properties prop = new Properties();
         try (FileInputStream inputStream = new FileInputStream(Objects.requireNonNull(Thread.currentThread().getContextClassLoader()
-                .getResource("bot.properties")).getPath())) {
+                .getResource(fileProperties)).getPath())) {
             prop.load(inputStream);
         } catch (Exception e) {
             throw new RuntimeException(e);
