@@ -1,5 +1,6 @@
 package ru.rapidcoder.trader.bot.component;
 
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.tinkoff.piapi.contract.v1.Account;
 import ru.tinkoff.piapi.core.models.Portfolio;
 
@@ -7,12 +8,8 @@ import java.util.List;
 
 public class AccountButton extends MenuItemButton {
 
-    private static final String TEXT = "Список счетов";
-    private static final String CALLBACK_DATA = "getAccountList";
-
-    public AccountButton() {
-        setText(TEXT);
-        setCallbackData(CALLBACK_DATA);
+    public AccountButton(String text, String callbackData) {
+        super(text, callbackData);
     }
 
     @Override
@@ -33,7 +30,12 @@ public class AccountButton extends MenuItemButton {
         return builder.toString();
     }
 
-    public String getCallbackData() {
-        return CALLBACK_DATA;
+    private InlineKeyboardMarkup createKeyboard() {
+        MainMenuComponent menu = new MainMenuComponent();
+        menu.addButton(new AccountButton("Список счетов", "getAccountList"));
+
+        menu.addButton(new BackButton("Назад", "backToMainMenu"));
+
+        return menu.getKeyboardMarkup();
     }
 }

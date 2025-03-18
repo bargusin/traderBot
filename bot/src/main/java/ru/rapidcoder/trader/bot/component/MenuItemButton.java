@@ -6,4 +6,9 @@ import ru.rapidcoder.trader.core.TradingService;
 public abstract class MenuItemButton extends InlineKeyboardButton implements Component {
     protected final TradingService tradingService = TradingService.getTradingService();
 
+    public MenuItemButton(String text, String callbackData) {
+        setText(text);
+        setCallbackData(callbackData);
+    }
+
 }
