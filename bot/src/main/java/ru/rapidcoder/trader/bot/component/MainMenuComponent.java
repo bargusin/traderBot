@@ -20,10 +20,16 @@ public class MainMenuComponent {
         keyboardMarkup.setKeyboard(rowsInline);
     }
 
-    public void addItem(MenuItemButton item) {
-        handlerExcecutor.add(new Handler(item));
+    public void addMenuButton(MenuItemButton button) {
+        handlerExcecutor.add(new Handler(button));
         List<InlineKeyboardButton> rowInline = new ArrayList<>();
-        rowInline.add(item);
+        rowInline.add(button);
+        rowsInline.add(rowInline);
+    }
+    public void addBackButton(MenuItemButton button) {
+        handlerExcecutor.add(new Handler(button));
+        List<InlineKeyboardButton> rowInline = new ArrayList<>();
+        rowInline.add(button);
         rowsInline.add(rowInline);
     }
 

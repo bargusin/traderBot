@@ -1,18 +1,16 @@
 package ru.rapidcoder.trader.bot.component;
 
-import ru.rapidcoder.trader.core.TradingAccount;
 import ru.tinkoff.piapi.contract.v1.Account;
 import ru.tinkoff.piapi.core.models.Portfolio;
 
 import java.util.List;
 
-public class AccountListButton extends MenuItemButton {
+public class AccountButton extends MenuItemButton {
 
     private static final String TEXT = "Список счетов";
     private static final String CALLBACK_DATA = "getAccountList";
-    private final TradingAccount tradingAccount = new TradingAccount();
 
-    public AccountListButton() {
+    public AccountButton() {
         setText(TEXT);
         setCallbackData(CALLBACK_DATA);
     }
@@ -20,10 +18,11 @@ public class AccountListButton extends MenuItemButton {
     @Override
     public String execute() {
         StringBuilder builder = new StringBuilder();
-        List<Account> accounts = tradingAccount.getAccountList();
+        List<Account> accounts = tradingService.grtInvestApi()
+                .getUserService()
+                .getAccountsSync();
         for (Account account : accounts) {
-            Portfolio portfolio = tradingAccount.getTradingService()
-                    .grtInvestApi()
+            Portfolio portfolio = tradingService.grtInvestApi()
                     .getOperationsService()
                     .getPortfolioSync(account.getId());
             builder.append(String.format("Production account: %s, %s (%s) \n", account.getName(), portfolio.getTotalAmountShares()

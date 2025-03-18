@@ -17,12 +17,8 @@ abstract class ServiceCommand extends BotCommand {
 
     protected KeyboardManager keyboardManager = KeyboardManager.getKeyboardManager();
 
-    ServiceCommand(String identifier, String description) {
+    public ServiceCommand(String identifier, String description) {
         super(identifier, description);
-    }
-
-    void sendAnswer(AbsSender absSender, Long chatId, String text) {
-        sendAnswer(absSender, chatId, text, null);
     }
 
     /**

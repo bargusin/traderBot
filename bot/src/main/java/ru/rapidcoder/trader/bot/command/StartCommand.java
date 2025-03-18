@@ -5,7 +5,8 @@ import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.bots.AbsSender;
-import ru.rapidcoder.trader.bot.component.AccountListButton;
+import ru.rapidcoder.trader.bot.component.AccountButton;
+import ru.rapidcoder.trader.bot.component.BackButton;
 import ru.rapidcoder.trader.bot.component.MainMenuComponent;
 
 public class StartCommand extends ServiceCommand {
@@ -18,7 +19,9 @@ public class StartCommand extends ServiceCommand {
 
     private InlineKeyboardMarkup createKeyboard() {
         MainMenuComponent menu = new MainMenuComponent();
-        menu.addItem(new AccountListButton());
+        menu.addMenuButton(new AccountButton());
+
+        menu.addBackButton(new BackButton("Назад", "backToMainMenu"));
 
         return menu.getKeyboardMarkup();
     }
