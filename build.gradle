@@ -2,10 +2,10 @@ allprojects {
     apply plugin: 'java'
 
     repositories {
-        mavenCentral()
-    }
-
-    repositories {
+        /*maven {
+            url uri("${projectDir}/build/libs")
+        }*/
+        mavenLocal()
         mavenCentral()
     }
 
@@ -13,5 +13,7 @@ allprojects {
         implementation("org.slf4j:slf4j-api:2.+")
         implementation("ch.qos.logback:logback-core:1.5.+")
         implementation("ch.qos.logback:logback-classic:1.5.+")
+
+        implementation("ru.tinkoff.piapi:java-sdk-core:1.27")
     }
 }

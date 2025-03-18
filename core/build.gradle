@@ -1,5 +1,5 @@
 apply plugin: 'java'
-/*apply plugin: 'java-library'
+apply plugin: 'java-library'
 apply plugin: 'maven-publish'
 
 java {
@@ -7,46 +7,24 @@ java {
     withSourcesJar()
 }
 
-group = "ru.rapidcoder.trader"
-version = "0.0.1-SNAPSHOT"
+group = 'ru.rapidcoder.trader'
+version = '0.0.1-SNAPSHOT'
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        maven(MavenPublication) {
             artifactId = 'core'
             from components.java
-            versionMapping {
-                usage('java-api') {
-                    fromResolutionOf('runtimeClasspath')
-                }
-                usage('java-runtime') {
-                    fromResolutionResult()
-                }
-            }
-        }
-    }
-    repositories {
-        maven {
-            // change URLs to point to your repos, e.g. http://my.org/repo
-            def releasesRepoUrl = layout.buildDirectory.dir('repos/releases')
-            def snapshotsRepoUrl = layout.buildDirectory.dir('repos/snapshots')
-            url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
         }
     }
 }
 
 javadoc {
-    if(JavaVersion.current().isJava9Compatible()) {
+    if (JavaVersion.current().isJava9Compatible()) {
         options.addBooleanOption('html5', true)
     }
 }
-*/
-
-repositories {
-    mavenCentral()
-}
 
 dependencies {
-    implementation project(':')
-    implementation("ru.tinkoff.piapi:java-sdk-core:1.27")
+    //implementation project(':')
 }

@@ -6,8 +6,12 @@ import ru.rapidcoder.trader.core.ResourcesAdapter;
 
 public class Main {
 
-    public static final String BOT_NAME = ResourcesAdapter.getProperties("bot.properties").get("botName").toString();
-    public static final String TOKEN_ID = ResourcesAdapter.getProperties("bot.properties").get("tokenId").toString();
+    public static final String BOT_NAME = ResourcesAdapter.getProperties("bot.properties")
+            .get("botName")
+            .toString();
+    public static final String TOKEN_ID = ResourcesAdapter.getProperties("bot.properties")
+            .get("tokenId")
+            .toString();
 
     public static void main(String[] args) {
         try {

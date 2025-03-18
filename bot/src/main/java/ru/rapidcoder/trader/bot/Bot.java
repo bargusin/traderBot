@@ -51,7 +51,11 @@ public class Bot extends TelegramLongPollingCommandBot {
 
     private void sendEditMessage(Long chatId, Integer messageId, String text, InlineKeyboardMarkup keyboardMarkup) {
         if (!StringUtils.isEmpty(text)) {
-            EditMessageText messageText = EditMessageText.builder().chatId(chatId).messageId(messageId).text(text).build();
+            EditMessageText messageText = EditMessageText.builder()
+                    .chatId(chatId)
+                    .messageId(messageId)
+                    .text(text)
+                    .build();
             try {
                 execute(messageText);
             } catch (TelegramApiException e) {
@@ -59,7 +63,11 @@ public class Bot extends TelegramLongPollingCommandBot {
             }
         }
 
-        EditMessageReplyMarkup messageReplyMarkup = EditMessageReplyMarkup.builder().messageId(messageId).chatId(chatId).replyMarkup(keyboardMarkup).build();
+        EditMessageReplyMarkup messageReplyMarkup = EditMessageReplyMarkup.builder()
+                .messageId(messageId)
+                .chatId(chatId)
+                .replyMarkup(keyboardMarkup)
+                .build();
         // Необходимо поместить в стэк текущую клавиатуру
         keyboardManager.save(chatId, keyboardMarkup);
         try {
@@ -79,8 +87,10 @@ public class Bot extends TelegramLongPollingCommandBot {
         if (update.hasMessage()) {
             // Обработка обычных сообщений
         } else if (update.hasCallbackQuery()) {
-            Message msg = (Message) update.getCallbackQuery().getMessage();
-            String result = handlerExcecutor.execute(update.getCallbackQuery().getData());
+            Message msg = (Message) update.getCallbackQuery()
+                    .getMessage();
+            String result = handlerExcecutor.execute(update.getCallbackQuery()
+                    .getData());
             sendEditMessage(msg.getChatId(), msg.getMessageId(), result, keyboardManager.get(msg.getChatId()));
         }
     }

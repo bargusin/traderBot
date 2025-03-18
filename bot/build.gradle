@@ -1,7 +1,12 @@
 apply plugin: 'java'
 
+repositories {
+    mavenLocal()
+}
+
 dependencies {
-    implementation project(':core')
+    //implementation project(':core')
+    implementation("ru.rapidcoder.trader:core:0.0.1+")
     implementation("org.telegram:telegrambots:6.9.7.1")
     implementation("org.telegram:telegrambotsextensions:6.9.7.1")
 }
