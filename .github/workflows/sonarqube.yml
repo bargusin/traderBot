@@ -1,0 +1,115 @@
+name: SonarCloud PR Analysis
+on:
+  pull_request:
+    branches: [ main ]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  analyze:
+    name: SonarCloud PR Analysis
+    runs-on: ubuntu-latest
+
+    # Только для PR в main
+    if: |
+      github.event.pull_request.base.ref == 'main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: SonarCloud Check
+        run: |
+          echo "🔍 Детальная проверка конфигурации:"
+          echo "SONAR_ORGANIZATION: '${{ secrets.SONAR_ORGANIZATION }}'"
+          echo "SONAR_PROJECT_KEY: '${{ secrets.SONAR_PROJECT_KEY }}'"
+          echo "SONAR_TOKEN: ${{ secrets.SONAR_TOKEN != '' }}"
+
+          # Проверка что значения не пустые
+          if [ -z "${{ secrets.SONAR_ORGANIZATION }}" ]; then
+            echo "❌ CRITICAL: SONAR_ORGANIZATION is EMPTY!"
+            echo "💡 Set it in GitHub Secrets → Actions"
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.SONAR_PROJECT_KEY }}" ]; then
+            echo "❌ CRITICAL: SONAR_PROJECT_KEY is EMPTY!"
+            echo "💡 Set it in GitHub Secrets → Actions"
+            exit 1
+          fi
+
+          if [ -z "${{ secrets.SONAR_TOKEN }}" ]; then
+            echo "❌ CRITICAL: SONAR_TOKEN is EMPTY!"
+            echo "💡 Generate token at: https://sonarcloud.io/account/security/"
+            exit 1
+          fi
+          echo "✅ All secrets are configured"
+
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: '8.5'
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Cache SonarQube packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar-${{ github.event.pull_request.number }}
+          restore-keys: ${{ runner.os }}-sonar-
+
+      - name: Build and test
+        run: |
+          gradle clean build jacocoTestReport
+
+      - name: SonarCloud Scan
+        if: github.event_name == 'pull_request'
+        run: |
+          gradle sonar \
+            -Dsonar.analysis.ci=true \
+            -Dsonar.gradle.skipCompile=true \
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }} \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.coverage.jacoco.xmlReportPaths=build/reports/jacoco/test/jacocoTestReport.xml \
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.event.pull_request.head.ref }} \
+            -Dsonar.pullrequest.base=${{ github.event.pull_request.base.ref }} \
+            -Dsonar.pullrequest.provider=github \
+            -Dsonar.pullrequest.github.repository=${{ github.repository }} \
+            -Dsonar.qualitygate.wait=true \
+            -Dsonar.qualitygate.ignore=INFO,MINOR \
+            -Dsonar.issues.fail.quality.gate.minSeverity=MAJOR
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add PR comment
+        if: always()
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const prNumber = context.issue.number;
+            const dashboardUrl = `https://sonarcloud.io/dashboard?id=${{ secrets.SONAR_PROJECT_KEY }}&pullRequest=${prNumber}`;
+            
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: `🔍 **SonarCloud Analysis Complete**
+            
+              [View detailed report](${dashboardUrl})`
+            });
