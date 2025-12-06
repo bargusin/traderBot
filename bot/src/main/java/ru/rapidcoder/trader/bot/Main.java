@@ -1,24 +1,34 @@
 package ru.rapidcoder.trader.bot;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-import ru.rapidcoder.trader.core.ResourcesAdapter;
 
 public class Main {
 
-    public static final String BOT_NAME = ResourcesAdapter.getProperties("bot.properties")
-            .get("botName")
-            .toString();
-    public static final String TOKEN_ID = ResourcesAdapter.getProperties("bot.properties")
-            .get("tokenId")
-            .toString();
+    private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         try {
-            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
-            telegramBotsApi.registerBot(new Bot(BOT_NAME, TOKEN_ID));
+            String environment = System.getenv("botEnv") != null ? System.getenv("botEnv") : "dev";
+            String botName = System.getenv(environment + "BotName");
+            String tokenId = System.getenv(environment + "TokenId");
+
+            TelegramBotsApi telegramBotsApi = createTelegramBotsApi();
+            Bot bot = createBot(botName, tokenId);
+            telegramBotsApi.registerBot(bot);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getMessage(), e);
         }
+    }
+
+    public static TelegramBotsApi createTelegramBotsApi() throws TelegramApiException {
+        return new TelegramBotsApi(DefaultBotSession.class);
+    }
+
+    public static Bot createBot(String botName, String tokenId) {
+        return new Bot(botName, tokenId);
     }
 }

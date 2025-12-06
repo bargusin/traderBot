@@ -9,3 +9,4 @@ out
 *.ipr
 *.iws
 *.properties
+*.env

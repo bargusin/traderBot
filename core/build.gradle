@@ -1,28 +1,9 @@
 apply plugin: 'java'
 apply plugin: 'java-library'
-apply plugin: 'maven-publish'
 
 java {
     withJavadocJar()
     withSourcesJar()
-}
-
-group = 'ru.rapidcoder.trader'
-version = '0.0.1-SNAPSHOT'
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            artifactId = 'core'
-            from components.java
-        }
-    }
-}
-
-javadoc {
-    if (JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
 }
 
 dependencies {

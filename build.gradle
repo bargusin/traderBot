@@ -2,11 +2,15 @@ allprojects {
     apply plugin: 'java'
 
     repositories {
-        /*maven {
-            url uri("${projectDir}/build/libs")
-        }*/
-        mavenLocal()
         mavenCentral()
+    }
+
+    group = 'ru.rapidcoder.trader'
+    version = '0.0.1-SNAPSHOT'
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     dependencies {
@@ -15,5 +19,11 @@ allprojects {
         implementation("ch.qos.logback:logback-classic:1.5.+")
 
         implementation("ru.tinkoff.piapi:java-sdk-core:1.27")
+
+        testImplementation("junit:junit:4.13.2")
+        testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
+        testImplementation("org.mockito:mockito-core:5.8.0")
+        testImplementation("org.mockito:mockito-junit-jupiter:5.8.0")
+        testImplementation("org.assertj:assertj-core:3.24.2")
     }
 }
