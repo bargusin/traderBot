@@ -8,7 +8,8 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.hibernate.cfg.Environment;
+import org.hibernate.cfg.JdbcSettings;
+import org.hibernate.jpa.boot.spi.JpaSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.rapidcoder.trader.core.database.model.User;
@@ -76,12 +77,10 @@ public class DatabaseManager {
     private SessionFactory createSessionFactory(DataSource dataSource) {
         Properties settings = new Properties();
 
-        // Используем Datasource, созданный ранее
-        settings.put(Environment.DATASOURCE, dataSource);
-        // Диалект для SQLite (из пакета hibernate-community-dialects)
-        settings.put(Environment.DIALECT, "org.hibernate.community.dialect.SQLiteDialect");
-        settings.put(Environment.SHOW_SQL, "true");
-        settings.put(Environment.HBM2DDL_AUTO, "validate"); // Flyway управляет схемой, Hibernate только проверяет
+        settings.put(JdbcSettings.JAKARTA_NON_JTA_DATASOURCE, dataSource);
+        settings.put(JdbcSettings.DIALECT, "org.hibernate.community.dialect.SQLiteDialect");
+        settings.put(JdbcSettings.SHOW_SQL, true);
+        settings.put(JdbcSettings.FORMAT_SQL, true);
 
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder().applySettings(settings)
                 .build();
