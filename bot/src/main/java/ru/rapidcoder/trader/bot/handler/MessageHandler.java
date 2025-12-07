@@ -4,6 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.rapidcoder.trader.bot.Bot;
+import ru.rapidcoder.trader.bot.command.CommandRegistry;
+import ru.rapidcoder.trader.bot.command.HelpCommand;
+import ru.rapidcoder.trader.bot.command.StartCommand;
 
 public class MessageHandler {
 
@@ -11,29 +14,29 @@ public class MessageHandler {
 
     private final Bot bot;
 
+    private final CommandRegistry commandRegistry;
+
     public MessageHandler(Bot bot) {
         this.bot = bot;
+        this.commandRegistry = new CommandRegistry(bot);
+
+        commandRegistry.registry(new StartCommand(bot, "/start", "Старт"));
+        commandRegistry.registry(new HelpCommand(bot, "/help", "Помощь"));
+
+        commandRegistry.registry(new StartCommand(bot, "back_to_main", "Основное меню"));
     }
 
     public void handleCommand(Update update) {
-        Long chatId = update.getMessage()
-                .getChatId();
         Long userId = update.getMessage()
                 .getFrom()
                 .getId();
-        String messageText = update.getMessage()
-                .getText();
 
         if (!hasAccess(userId)) {
             //TODO
         } else {
-            if ("/start".equals(messageText)) {
-                bot.showMainMenu(chatId, null);
-            } else if ("/help".equals(messageText)) {
-                bot.showHelpMenu(chatId, null);
-            } else {
-
-            }
+            commandRegistry.retrieveCommand(update.getMessage()
+                            .getText())
+                    .execute(update);
         }
     }
 
@@ -42,28 +45,16 @@ public class MessageHandler {
                 .getData();
         String callbackId = update.getCallbackQuery()
                 .getId();
-        Long chatId = update.getCallbackQuery()
-                .getMessage()
-                .getChatId();
         Long userId = update.getCallbackQuery()
                 .getFrom()
                 .getId();
-        Integer messageId = update.getCallbackQuery()
-                .getMessage()
-                .getMessageId();
 
         if (!hasAccess(userId)) {
             logger.debug("User dosn't access to bot by userId={}", userId);
             bot.showNotification(callbackId, "Доступ к боту запрещен");
         } else {
-            switch (callbackData) {
-                case "menu_help" -> {
-                    bot.showHelpMenu(chatId, messageId);
-                }
-                case "back_to_main" -> {
-                    bot.showMainMenu(chatId, messageId);
-                }
-            }
+            commandRegistry.retrieveCommand(callbackData)
+                    .execute(update);
         }
     }
 
