@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY,
-    chat_id INTEGER NOT NULL,
+    id BIGINT PRIMARY KEY,
+    chat_id BIGINT NOT NULL,
     user_name TEXT,
     encrypted_token TEXT NOT NULL,
     mode TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

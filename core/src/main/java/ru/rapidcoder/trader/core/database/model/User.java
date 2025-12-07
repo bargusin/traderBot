@@ -3,6 +3,7 @@ package ru.rapidcoder.trader.core.database.model;
 import jakarta.persistence.*;
 import ru.rapidcoder.trader.core.TradingMode;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -27,7 +28,7 @@ public class User {
     private TradingMode mode;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     public Long getId() {
         return id;
@@ -69,11 +70,11 @@ public class User {
         this.mode = mode;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public Instant getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
     }
 }

@@ -24,33 +24,32 @@ public class DatabaseManager {
     private final HikariDataSource dataSource;
     private final SessionFactory sessionFactory;
 
-    private DatabaseManager() {
+    private DatabaseManager(String storageFile) {
         try {
             // 1. Инициализация DataSource (HikariCP)
-            this.dataSource = createDataSource();
+            this.dataSource = createDataSource(storageFile);
 
             // 2. Запуск миграций (Flyway)
             migrateDatabase(dataSource);
 
             // 3. Инициализация Hibernate (SessionFactory)
             this.sessionFactory = createSessionFactory(dataSource);
-
         } catch (Exception e) {
             logger.error("Ошибка инициализации базы данных", e);
             throw new RuntimeException("Не удалось запустить DatabaseManager", e);
         }
     }
 
-    public static synchronized DatabaseManager getInstance() {
+    public static synchronized DatabaseManager getInstance(String storageFile) {
         if (instance == null) {
-            instance = new DatabaseManager();
+            instance = new DatabaseManager(storageFile);
         }
         return instance;
     }
 
-    private HikariDataSource createDataSource() {
+    private HikariDataSource createDataSource(String storageFile) {
         HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:sqlite:trader_bot.db");
+        config.setJdbcUrl("jdbc:sqlite:" + storageFile);
         config.setDriverClassName("org.sqlite.JDBC");
 
         // Настройки пула
