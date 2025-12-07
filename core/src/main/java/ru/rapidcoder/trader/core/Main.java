@@ -13,17 +13,17 @@ import java.util.Date;
 public class Main {
 
     public static final String SANDBOX_TOKEN = ResourcesAdapter.getProperties("trading.properties").get("sandboxToken").toString();
-    public static final String PRODUCTION_TOKEN = ResourcesAdapter.getProperties("trading.properties").get("productionToken").toString();
+    //public static final String PRODUCTION_TOKEN = ResourcesAdapter.getProperties("trading.properties").get("productionToken").toString();
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
         System.out.println("Hello, World!");
         //Можно создать экземпляр sandbox - тогда все вызовы будут переадресованы в песочницу
-//        InvestApi sandboxApi = InvestApi.createSandbox(PRODUCTION_TOKEN);
-//        sandboxServiceExample(sandboxApi);
+        InvestApi sandboxApi = InvestApi.createSandbox(SANDBOX_TOKEN);
+        sandboxServiceExample(sandboxApi);
 
-        InvestApi productionApi = InvestApi.create(PRODUCTION_TOKEN);
-        productionServiceExample(productionApi);
+//        InvestApi productionApi = InvestApi.create(PRODUCTION_TOKEN);
+//        productionServiceExample(productionApi);
     }
 
     private static void productionServiceExample(InvestApi api) {

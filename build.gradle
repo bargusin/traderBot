@@ -20,6 +20,12 @@ allprojects {
 
         implementation("ru.tinkoff.piapi:java-sdk-core:1.27")
 
+        implementation ("org.xerial:sqlite-jdbc:3.51.1.0")
+        implementation ("org.flywaydb:flyway-core:11.18.0")
+        implementation ("com.zaxxer:HikariCP:7.0.2")
+        implementation ("org.hibernate.orm:hibernate-core:7.1.11.Final")
+        implementation ("org.hibernate.orm:hibernate-community-dialects:7.1.11.Final")
+
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
         testImplementation("org.mockito:mockito-core:5.8.0")
