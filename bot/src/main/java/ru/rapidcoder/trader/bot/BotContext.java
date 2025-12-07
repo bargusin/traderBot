@@ -1,14 +1,14 @@
 package ru.rapidcoder.trader.bot;
 
-import ru.rapidcoder.trader.bot.component.BotMode;
+import ru.rapidcoder.trader.core.TradingMode;
 
 public class BotContext {
 
     private static BotContext instance;
-    private BotMode currentMode;
+    private TradingMode currentMode;
 
     private BotContext() {
-        this.currentMode = BotMode.SANDBOX;
+        this.currentMode = TradingMode.SANDBOX;
     }
 
     public static synchronized BotContext getInstance() {
@@ -18,11 +18,11 @@ public class BotContext {
         return instance;
     }
 
-    public BotMode getMode() {
+    public TradingMode getMode() {
         return currentMode;
     }
 
-    public void setMode(BotMode mode) {
+    public void setMode(TradingMode mode) {
         this.currentMode = mode;
     }
 

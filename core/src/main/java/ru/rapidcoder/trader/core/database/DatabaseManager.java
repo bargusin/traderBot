@@ -50,12 +50,11 @@ public class DatabaseManager {
 
     private HikariDataSource createDataSource() {
         HikariConfig config = new HikariConfig();
-        // Указываем путь к файлу БД. Файл создастся автоматически.
         config.setJdbcUrl("jdbc:sqlite:trader_bot.db");
         config.setDriverClassName("org.sqlite.JDBC");
 
         // Настройки пула
-        config.setMaximumPoolSize(5); // Для SQLite (файловая БД) много потоков не нужно
+        config.setMaximumPoolSize(1);
         config.setPoolName("SQLiteConnectionPool");
 
         // ВАЖНО для SQLite: Включение внешних ключей (по умолчанию выключены)
@@ -72,7 +71,7 @@ public class DatabaseManager {
                 .baselineOnMigrate(true)
                 .load();
         flyway.migrate();
-        logger.info("Миграции успешно применены.");
+        logger.info("Миграции успешно применены");
     }
 
     private SessionFactory createSessionFactory(DataSource dataSource) {
@@ -80,10 +79,8 @@ public class DatabaseManager {
 
         // Используем Datasource, созданный ранее
         settings.put(Environment.DATASOURCE, dataSource);
-
         // Диалект для SQLite (из пакета hibernate-community-dialects)
         settings.put(Environment.DIALECT, "org.hibernate.community.dialect.SQLiteDialect");
-
         settings.put(Environment.SHOW_SQL, "true");
         settings.put(Environment.HBM2DDL_AUTO, "validate"); // Flyway управляет схемой, Hibernate только проверяет
 
@@ -92,7 +89,7 @@ public class DatabaseManager {
 
         MetadataSources sources = new MetadataSources(registry);
 
-        // ЗДЕСЬ регистрируем ваши Entity классы
+        // Регистрация Entity-классов
         sources.addAnnotatedClass(User.class);
         // sources.addAnnotatedClass(AuditLog.class);
 

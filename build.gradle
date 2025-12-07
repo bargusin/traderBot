@@ -1,5 +1,6 @@
 allprojects {
     apply plugin: 'java'
+    apply plugin: 'jacoco'
 
     repositories {
         mavenCentral()
@@ -31,5 +32,50 @@ allprojects {
         testImplementation("org.mockito:mockito-core:5.8.0")
         testImplementation("org.mockito:mockito-junit-jupiter:5.8.0")
         testImplementation("org.assertj:assertj-core:3.24.2")
+    }
+
+    test {
+        useJUnitPlatform()
+
+        testLogging {
+            events "passed", "skipped", "failed"
+            showStandardStreams = true
+        }
+
+        minHeapSize = "512m"
+        maxHeapSize = "1024m"
+
+        finalizedBy jacocoTestReport
+    }
+
+    jacoco {
+        toolVersion = "0.8.10"
+    }
+
+    jacocoTestCoverageVerification {
+        violationRules {
+            rule {
+                limit {
+                    minimum = 0.1 // 10% coverage
+                }
+            }
+        }
+    }
+
+    jacocoTestReport {
+        reports {
+            xml.required = true
+            html.required = true
+
+            html.outputLocation = layout.buildDirectory.dir("${rootDir}/reports/jacoco/html")
+
+            afterEvaluate {
+                classDirectories.setFrom(files(classDirectories.files.collect {
+                    fileTree(dir: it, exclude: [
+                            '**/config/**'
+                    ])
+                }))
+            }
+        }
     }
 }
