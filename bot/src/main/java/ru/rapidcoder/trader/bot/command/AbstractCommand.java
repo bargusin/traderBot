@@ -17,6 +17,7 @@ public abstract class AbstractCommand implements Command {
     protected final Bot bot;
 
     private final String identifier;
+
     private final String description;
 
     public AbstractCommand(Bot bot, String identifier, String description) {

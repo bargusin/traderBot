@@ -23,7 +23,7 @@ public class MessageHandler {
         commandRegistry.registry(new StartCommand(bot, "/start", "Старт"));
         commandRegistry.registry(new HelpCommand(bot, "/help", "Помощь"));
 
-        commandRegistry.registry(new StartCommand(bot, "back_to_main", "Основное меню"));
+        commandRegistry.registry(new StartCommand(bot, "back_to_main", "Возврат в основное меню"));
     }
 
     public void handleCommand(Update update) {
@@ -32,6 +32,7 @@ public class MessageHandler {
                 .getId();
 
         if (!hasAccess(userId)) {
+            logger.info("User dosn't access to bot by userId={}", userId);
             //TODO
         } else {
             commandRegistry.retrieveCommand(update.getMessage()
@@ -50,7 +51,7 @@ public class MessageHandler {
                 .getId();
 
         if (!hasAccess(userId)) {
-            logger.debug("User dosn't access to bot by userId={}", userId);
+            logger.info("User dosn't access to bot by userId={}", userId);
             bot.showNotification(callbackId, "Доступ к боту запрещен");
         } else {
             commandRegistry.retrieveCommand(callbackData)

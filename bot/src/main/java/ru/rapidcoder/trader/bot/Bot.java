@@ -7,6 +7,7 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import ru.rapidcoder.trader.bot.component.BotMode;
 import ru.rapidcoder.trader.bot.handler.MessageHandler;
 
 public class Bot extends TelegramLongPollingBot {
@@ -20,6 +21,8 @@ public class Bot extends TelegramLongPollingBot {
         this.botName = botName;
 
         messageHandler = new MessageHandler(this);
+
+        BotContext.getInstance().setMode(BotMode.SANDBOX);
     }
 
     @Override

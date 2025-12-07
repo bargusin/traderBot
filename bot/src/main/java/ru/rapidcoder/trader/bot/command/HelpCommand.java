@@ -3,7 +3,7 @@ package ru.rapidcoder.trader.bot.command;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.rapidcoder.trader.bot.Bot;
-import ru.rapidcoder.trader.bot.component.KeyboardButton;
+import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class HelpCommand extends AbstractCommand {
                 
                 """;
 
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(List.of(List.of(new KeyboardButton("\uD83C\uDFE0 Главное меню", "back_to_main"))));
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup(List.of(List.of(InterfaceFactory.createButton("\uD83C\uDFE0 Главное меню", "back_to_main"))));
 
         processMessage(update, text, keyboard);
     }
