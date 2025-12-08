@@ -19,9 +19,9 @@ allprojects {
     }
 
     dependencies {
-        implementation("org.slf4j:slf4j-api:2.+")
-        implementation("ch.qos.logback:logback-core:1.5.+")
-        implementation("ch.qos.logback:logback-classic:1.5.+")
+        implementation("org.slf4j:slf4j-api:2.0.17")
+        implementation("ch.qos.logback:logback-core:1.5.21")
+        implementation("ch.qos.logback:logback-classic:1.5.21")
 
         implementation("ru.tinkoff.piapi:java-sdk-core:1.27")
 
