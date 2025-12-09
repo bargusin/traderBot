@@ -1,5 +1,6 @@
 package ru.rapidcoder.trader.core.database.test;
 
+import org.hibernate.SessionFactory;
 import org.junit.jupiter.api.*;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 
@@ -12,6 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DatabaseManagerTest {
 
     private static final String TEST_DB_PATH = "test_trader_bot.db";
+
     private DatabaseManager databaseManager;
 
     @AfterAll
