@@ -9,15 +9,15 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.rapidcoder.trader.bot.Bot;
+import ru.rapidcoder.trader.bot.service.UserStateService;
 
 public abstract class AbstractCommand implements Command {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractCommand.class);
 
     protected final Bot bot;
-
+    protected final UserStateService userStateService = UserStateService.getInstance();
     private final String identifier;
-
     private final String description;
 
     public AbstractCommand(Bot bot, String identifier, String description) {
@@ -32,6 +32,17 @@ public abstract class AbstractCommand implements Command {
 
     public String getDescription() {
         return description;
+    }
+
+    protected String getSuffix(String input) {
+        if (input == null) {
+            return null;
+        }
+        int index = input.indexOf('#');
+        if (index == -1 || index == input.length() - 1) {
+            return null;
+        }
+        return input.substring(index + 1);
     }
 
     protected Long getChatId(Update update) {
