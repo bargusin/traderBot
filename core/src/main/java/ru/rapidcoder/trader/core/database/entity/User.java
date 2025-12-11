@@ -1,10 +1,9 @@
-package ru.rapidcoder.trader.core.database.model;
+package ru.rapidcoder.trader.core.database.entity;
 
 import jakarta.persistence.*;
 import ru.rapidcoder.trader.core.TradingMode;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -29,6 +28,10 @@ public class User {
 
     @Column(name = "created_at")
     private Instant createdAt;
+
+    public User() {
+
+    }
 
     public Long getId() {
         return id;

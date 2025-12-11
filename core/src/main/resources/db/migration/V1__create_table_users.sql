@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS users (
-    id BIGINT PRIMARY KEY,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     chat_id BIGINT NOT NULL,
     user_name TEXT,
     encrypted_token TEXT NOT NULL,
