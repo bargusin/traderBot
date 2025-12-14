@@ -15,6 +15,7 @@ import org.hibernate.cfg.JdbcSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.rapidcoder.trader.core.database.entity.User;
+import ru.rapidcoder.trader.core.database.entity.UserSetting;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -154,8 +155,9 @@ public class DatabaseManager {
 
         // Регистрация Entity-классов
         sources.addAnnotatedClass(User.class);
+        sources.addAnnotatedClass(UserSetting.class);
         // sources.addAnnotatedClass(AuditLog.class);
-        sources.addPackage("ru.rapidcoder.trader.core.database.entity");
+        //sources.addPackage("ru.rapidcoder.trader.core.database.entity");
 
         Metadata metadata = sources.getMetadataBuilder()
                 .build();

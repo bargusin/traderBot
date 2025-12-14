@@ -4,41 +4,40 @@ import jakarta.persistence.*;
 import ru.rapidcoder.trader.core.TradingMode;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 @Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(name = "chat_id", unique = true, nullable = false)
+    @Column(name = "chat_id")
     private Long chatId;
 
     @Column(name = "user_name")
     private String userName;
 
-    @Column(name = "encrypted_token")
-    private String encryptedToken;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "mode")
-    private TradingMode mode;
-
     @Column(name = "created_at")
     private Instant createdAt;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<UserSetting> settings = new ArrayList<>();
+
     public User() {
-
     }
 
-    public Long getId() {
-        return id;
+    public void addSetting(TradingMode mode, String token) {
+        UserSetting setting = new UserSetting(this, mode, token);
+        this.settings.add(setting);
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Optional<UserSetting> getSettingByMode(TradingMode mode) {
+        return settings.stream()
+                .filter(s -> s.getMode()
+                        .equals(mode))
+                .findFirst();
     }
 
     public Long getChatId() {
@@ -57,27 +56,15 @@ public class User {
         this.userName = userName;
     }
 
-    public String getEncryptedToken() {
-        return encryptedToken;
-    }
-
-    public void setEncryptedToken(String encryptedToken) {
-        this.encryptedToken = encryptedToken;
-    }
-
-    public TradingMode getMode() {
-        return mode;
-    }
-
-    public void setMode(TradingMode mode) {
-        this.mode = mode;
-    }
-
     public Instant getCreatedAt() {
         return createdAt;
     }
 
     public void setCreatedAt(Instant createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public List<UserSetting> getSettings() {
+        return settings;
     }
 }
