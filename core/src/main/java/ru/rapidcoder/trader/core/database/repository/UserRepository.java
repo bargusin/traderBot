@@ -36,7 +36,6 @@ public class UserRepository {
                 query.setParameter("chatId", chatId);
                 User user = query.uniqueResult();
                 return Optional.ofNullable(user);
-
             });
         } catch (Exception e) {
             logger.error("Ошибка при поиске пользователя chatId={}", chatId, e);
@@ -56,7 +55,6 @@ public class UserRepository {
                         .filter(s -> s.getMode()
                                 .equals(mode))
                         .findFirst();
-
                 if (existingSetting.isPresent()) {
                     existingSetting.get()
                             .setEncryptedToken(newToken);

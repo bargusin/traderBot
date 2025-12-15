@@ -4,14 +4,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.rapidcoder.trader.bot.Bot;
-import ru.rapidcoder.trader.bot.command.AbstractCommand;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.handler.InputHandler;
+import ru.rapidcoder.trader.core.TradingMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChangeSandboxTokenCommand extends AbstractCommand {
+public class ChangeSandboxTokenCommand extends ChangeTokenCommand {
 
     public ChangeSandboxTokenCommand(Bot bot, String identifier, String description) {
         super(bot, identifier, description);
@@ -19,22 +19,22 @@ public class ChangeSandboxTokenCommand extends AbstractCommand {
 
     @Override
     public void execute(Update update) {
-        Long userId = getUserId(update);
+        Long chatId = getChatId(update);
 
         processMessage(update, "Введите новый SANDBOX токен:", null);
 
-        userStateService.setInputHandler(userId, new InputHandler() {
+        userStateService.setInputHandler(chatId, new InputHandler() {
             @Override
             public boolean handleInput(Update update) {
-                String text = update.getMessage()
-                        .getText();
                 InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
                 List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
                 rows.add(List.of(InterfaceFactory.createButton("⚙\uFE0F Настройки", "/settings")));
                 keyboard.setKeyboard(rows);
 
-                processMessage(update, "✅ Новое значение для SANDBOX токена успешно установлено: " + text, keyboard);
+                updateToken(TradingMode.SANDBOX, update);
+
+                processMessage(update, "✅ Новое значение для SANDBOX токена успешно установлено", keyboard);
                 return true;
             }
         });

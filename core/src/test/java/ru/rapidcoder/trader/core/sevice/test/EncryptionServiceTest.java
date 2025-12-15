@@ -21,6 +21,7 @@ public class EncryptionServiceTest {
                 .getEncoded();
         validKeyBase64 = Base64.getEncoder()
                 .encodeToString(key);
+        System.out.println("validKeyBase64: " + validKeyBase64);
     }
 
     @Test

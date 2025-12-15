@@ -83,6 +83,19 @@ public abstract class AbstractCommand implements Command {
         throw new IllegalStateException("Не удалось получить userId из Update");
     }
 
+    protected String getUserName(Update update) {
+        if (update.hasCallbackQuery()) {
+            return update.getCallbackQuery()
+                    .getFrom()
+                    .getUserName();
+        } else if (update.hasMessage()) {
+            return update.getMessage()
+                    .getFrom()
+                    .getUserName();
+        }
+        throw new IllegalStateException("Не удалось получить userName из Update");
+    }
+
     protected void processMessage(Update update, String text, InlineKeyboardMarkup keyboard) {
         if (getMessageId(update) != null) {
             updateMessage(getChatId(update), getMessageId(update), text, keyboard);

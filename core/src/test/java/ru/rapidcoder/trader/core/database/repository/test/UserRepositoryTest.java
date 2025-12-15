@@ -6,7 +6,11 @@ import ru.rapidcoder.trader.core.database.DatabaseManager;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.entity.UserSetting;
 import ru.rapidcoder.trader.core.database.repository.UserRepository;
+import ru.rapidcoder.trader.core.service.EncryptionService;
 
+import javax.crypto.KeyGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,6 +21,19 @@ public class UserRepositoryTest {
     private DatabaseManager databaseManager;
 
     private UserRepository userRepository;
+
+    private EncryptionService encryptionService;
+
+    @BeforeAll
+    void setUpAll() throws NoSuchAlgorithmException {
+        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+        keyGen.init(256);
+        byte[] key = keyGen.generateKey()
+                .getEncoded();
+        String validKeyBase64 = Base64.getEncoder()
+                .encodeToString(key);
+        encryptionService = new EncryptionService(validKeyBase64);
+    }
 
     @BeforeEach
     void setUp() {
@@ -94,16 +111,30 @@ public class UserRepositoryTest {
         Optional<UserSetting> productionSetting = foundUser.getSettingByMode(TradingMode.PRODUCTION);
         assertFalse(productionSetting.isPresent());
 
-        userRepository.updateToken(100L, TradingMode.SANDBOX, "sandbox_token_value");
+        userRepository.updateToken(100L, TradingMode.SANDBOX, encryptionService.encrypt("sandbox_token_value"));
         Optional<User> refreshedOpt = userRepository.findByChatId(100L);
         assertTrue(refreshedOpt.isPresent());
         User refreshedUser = refreshedOpt.get();
         sandboxSetting = refreshedUser.getSettingByMode(TradingMode.SANDBOX);
         assertTrue(sandboxSetting.isPresent());
-        assertEquals("sandbox_token_value", sandboxSetting.get()
-                .getEncryptedToken());
+        assertEquals("sandbox_token_value", encryptionService.decrypt(sandboxSetting.get()
+                .getEncryptedToken()));
 
         productionSetting = refreshedUser.getSettingByMode(TradingMode.PRODUCTION);
         assertFalse(productionSetting.isPresent());
+    }
+
+    @Test
+    @DisplayName("Интеграционный тест: Проверка существования пользователя")
+    void testExistsByChatId() {
+        User newUser = new User();
+        newUser.setChatId(100L);
+        newUser.setUserName("Trader");
+
+        User savedUser = userRepository.save(newUser);
+        assertNotNull(savedUser);
+        assertNotNull(savedUser.getChatId());
+
+        assertTrue(userRepository.existsByChatId(100L), "Пользователь должен быть найден");
     }
 }

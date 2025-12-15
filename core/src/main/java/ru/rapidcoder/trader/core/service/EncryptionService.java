@@ -22,7 +22,7 @@ public class EncryptionService {
         this.secureRandom = new SecureRandom();
 
         if (keyBase64 == null || keyBase64.isBlank()) {
-            throw new IllegalStateException("Переменная окружения ENCRYPTION_KEY не установлена!");
+            throw new IllegalStateException("Переменная окружения ENCRYPTED_KEY не установлена!");
         }
 
         // Декодируем ключ из Base64
