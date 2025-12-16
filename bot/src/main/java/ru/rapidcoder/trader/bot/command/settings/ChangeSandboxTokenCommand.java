@@ -7,6 +7,7 @@ import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.handler.InputHandler;
 import ru.rapidcoder.trader.core.TradingMode;
+import ru.tinkoff.piapi.core.InvestApi;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +33,28 @@ public class ChangeSandboxTokenCommand extends ChangeTokenCommand {
                 rows.add(List.of(InterfaceFactory.createButton("⚙\uFE0F Настройки", "/settings")));
                 keyboard.setKeyboard(rows);
 
-                updateToken(TradingMode.SANDBOX, update);
-
-                processMessage(update, "✅ Новое значение для SANDBOX токена успешно установлено", keyboard);
-                return true;
+                if (checkToken(update.getMessage()
+                        .getText())) {
+                    updateToken(TradingMode.SANDBOX, update);
+                    processMessage(update, "✅ Новое значение для SANDBOX токена успешно установлено", keyboard);
+                    return true;
+                } else {
+                    processMessage(update, "\uD83D\uDEAB Не удалось установить значение SANDBOX токена", keyboard);
+                    return false;
+                }
             }
         });
+    }
+
+    protected boolean checkToken(String token) {
+        try {
+            InvestApi sandboxApi = InvestApi.createSandbox(token);
+            sandboxApi.getUserService()
+                    .getAccountsSync();
+            return true;
+        } catch (Exception e) {
+            logger.error("Ошибка установки нового SANDBOX токена", e);
+            return false;
+        }
     }
 }

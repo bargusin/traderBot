@@ -24,4 +24,6 @@ public abstract class ChangeTokenCommand extends AbstractCommand {
                 .getText()));
     }
 
+    abstract boolean checkToken(String token);
+
 }
