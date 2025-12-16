@@ -4,7 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.rapidcoder.trader.bot.Bot;
-import ru.rapidcoder.trader.bot.command.*;
+import ru.rapidcoder.trader.bot.command.CommandRegistry;
+import ru.rapidcoder.trader.bot.command.HelpCommand;
+import ru.rapidcoder.trader.bot.command.StartCommand;
 import ru.rapidcoder.trader.bot.command.settings.ChangeProductionTokenCommand;
 import ru.rapidcoder.trader.bot.command.settings.ChangeSandboxTokenCommand;
 import ru.rapidcoder.trader.bot.command.settings.SettingsCommand;
@@ -42,9 +44,8 @@ public class MessageHandler {
                 .getFrom()
                 .getId();
 
-        if (!hasAccess(userId)) {
-            logger.info("User dosn't access to bot by userId={}", userId);
-            //TODO
+        if (bot.hasAccess(userId)) {
+            bot.sendMessage(userId, "Доступ к боту запрещен", null);
         } else {
             if ("/cancel".equals(messageText)) {
                 userStateService.clearState(userId);
@@ -69,15 +70,12 @@ public class MessageHandler {
     public void handleCallback(Update update) {
         String callbackData = update.getCallbackQuery()
                 .getData();
-        String callbackId = update.getCallbackQuery()
-                .getId();
         Long userId = update.getCallbackQuery()
                 .getFrom()
                 .getId();
 
-        if (!hasAccess(userId)) {
-            logger.info("User dosn't access to bot by userId={}", userId);
-            bot.showNotification(callbackId, "Доступ к боту запрещен");
+        if (bot.hasAccess(userId)) {
+            bot.sendMessage(userId, "Доступ к боту запрещен", null);
         } else {
             int index = callbackData.indexOf('#');
             if (index > 0) {
@@ -86,9 +84,5 @@ public class MessageHandler {
             commandRegistry.retrieveCommand(callbackData)
                     .execute(update);
         }
-    }
-
-    private boolean hasAccess(Long userId) {
-        return true;
     }
 }
