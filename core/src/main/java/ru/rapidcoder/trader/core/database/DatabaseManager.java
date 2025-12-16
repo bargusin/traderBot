@@ -69,7 +69,7 @@ public class DatabaseManager {
 
         // Важные настройки для SQLite
         config.addDataSourceProperty("foreign_keys", "true"); // Включение внешних ключей
-        config.addDataSourceProperty("journal_mode", "WAL"); // Режим журналирования
+        //config.addDataSourceProperty("journal_mode", "WAL"); // Режим журналирования
         config.addDataSourceProperty("synchronous", "NORMAL"); // Синхронизация
         config.addDataSourceProperty("busy_timeout", "5000"); // Таймаут ожидания блокировки
         config.addDataSourceProperty("cache_size", "-2000"); // Размер кэша в страницах (2MB)
@@ -171,20 +171,6 @@ public class DatabaseManager {
         return sessionFactory;
     }
 
-    /**
-     * Получить новый Session
-     */
-    public Session openSession() {
-        return sessionFactory.openSession();
-    }
-
-    /**
-     * Получить текущую Session (если используется контекст сессии)
-     */
-    public Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
-    }
-
     public DataSource getDataSource() {
         return dataSource;
     }
@@ -204,13 +190,6 @@ public class DatabaseManager {
                 throw new RuntimeException("Transaction failed", e);
             }
         }
-    }
-
-    public void executeInTransaction(Consumer<Session> consumer) {
-        executeInTransaction(session -> {
-            consumer.accept(session);
-            return null;
-        });
     }
 
     private void closeResources() {
@@ -240,7 +219,7 @@ public class DatabaseManager {
     }
 
     public boolean isDatabaseAvailable() {
-        try (var connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             return connection.isValid(2); // 2 секунды таймаута
         } catch (Exception e) {
             logger.error("Проверка доступности БД не удалась", e);
