@@ -2,12 +2,8 @@ package ru.rapidcoder.trader.bot.command;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.telegram.telegrambots.meta.api.methods.ParseMode;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.service.UserStateService;
 
@@ -98,36 +94,9 @@ public abstract class AbstractCommand implements Command {
 
     protected void processMessage(Update update, String text, InlineKeyboardMarkup keyboard) {
         if (getMessageId(update) != null) {
-            updateMessage(getChatId(update), getMessageId(update), text, keyboard);
+            bot.updateMessage(getChatId(update), getMessageId(update), text, keyboard);
         } else {
-            sendMessage(getChatId(update), text, keyboard);
-        }
-    }
-
-    private void sendMessage(Long chatId, String text, InlineKeyboardMarkup keyboard) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId);
-        message.setText(text);
-        message.setParseMode(ParseMode.HTML);
-        message.setReplyMarkup(keyboard);
-        try {
-            bot.execute(message);
-        } catch (TelegramApiException e) {
-            logger.error(e.getMessage(), e);
-        }
-    }
-
-    private void updateMessage(Long chatId, Integer messageId, String text, InlineKeyboardMarkup keyboard) {
-        EditMessageText message = new EditMessageText();
-        message.setChatId(chatId);
-        message.setText(text);
-        message.setMessageId(messageId);
-        message.setParseMode(ParseMode.HTML);
-        message.setReplyMarkup(keyboard);
-        try {
-            bot.execute(message);
-        } catch (TelegramApiException e) {
-            logger.error(e.getMessage(), e);
+            bot.sendMessage(getChatId(update), text, keyboard);
         }
     }
 }
