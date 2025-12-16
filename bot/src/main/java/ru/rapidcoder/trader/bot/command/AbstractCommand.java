@@ -13,7 +13,7 @@ import ru.rapidcoder.trader.bot.service.UserStateService;
 
 public abstract class AbstractCommand implements Command {
 
-    private static final Logger logger = LoggerFactory.getLogger(AbstractCommand.class);
+    protected static final Logger logger = LoggerFactory.getLogger(AbstractCommand.class);
 
     protected final Bot bot;
     protected final UserStateService userStateService = UserStateService.getInstance();
