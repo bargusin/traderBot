@@ -1,39 +1,24 @@
 package ru.rapidcoder.trader.core.database.test;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 
 import java.io.File;
 import java.lang.reflect.Field;
+import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DatabaseManagerTest {
 
-    private static final String TEST_DB_PATH = "test_trader_bot.db";
     private DatabaseManager databaseManager;
 
-    @AfterAll
-    static void tearDownAll() {
-        File dbFile = new File(TEST_DB_PATH);
-        if (dbFile.exists()) {
-            dbFile.delete();
-        }
-    }
-
-    @BeforeAll
-    void setUpAll() throws Exception {
-        File dbFile = new File(TEST_DB_PATH);
-        if (dbFile.exists()) {
-            dbFile.delete();
-        }
-        resetSingleton();
-    }
-
     @BeforeEach
-    void setUp() {
-        databaseManager = DatabaseManager.getInstance(TEST_DB_PATH);
+    void setUp() throws Exception {
+        resetSingleton();
+        databaseManager = DatabaseManager.getInstance(":memory:");
     }
 
     @AfterEach
@@ -80,5 +65,41 @@ public class DatabaseManagerTest {
     void testCloseMultipleTimesIsSafe() {
         databaseManager.close();
         assertDoesNotThrow(() -> databaseManager.close(), "Повторный вызов close() не должен вызывать исключений");
+    }
+
+    @Test
+    @DisplayName("clearCaches: не должен выбрасывать исключений")
+    void testClearCaches() {
+        assertDoesNotThrow(databaseManager::clearCaches);
+    }
+
+    @Test
+    @DisplayName("isDatabaseAvailable: должен возвращать true при живом подключении и false при закрытом")
+    void testIsDatabaseAvailable() {
+        assertTrue(databaseManager.isDatabaseAvailable(), "БД должна быть доступна после инициализации");
+        if (databaseManager.getDataSource() instanceof HikariDataSource) {
+            ((HikariDataSource) databaseManager.getDataSource()).close();
+        }
+        assertFalse(databaseManager.isDatabaseAvailable(), "БД не должна быть доступна после закрытия пула");
+    }
+
+    @Test
+    @DisplayName("Конструктор: должен выбрасывать RuntimeException при ошибке инициализации")
+    void testConstructorFailure() throws Exception {
+        String tempDirPath = System.getProperty("java.io.tmpdir");
+        File directory = Paths.get(tempDirPath)
+                .resolve("existing_folder")
+                .toFile();
+        directory.mkdir();
+        String badPath = directory.getAbsolutePath();
+
+        resetSingleton();
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            DatabaseManager.getInstance(badPath);
+        });
+
+        assertEquals("Не удалось запустить DatabaseManager", exception.getMessage());
+        assertNotNull(exception.getCause());
     }
 }

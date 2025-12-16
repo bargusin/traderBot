@@ -12,6 +12,6 @@ public class InterfaceFactory {
     }
 
     public static KeyboardButton createButton(String text, String callbackData) {
-        return new KeyboardButton(format(text), callbackData);
+        return new KeyboardButton(text, callbackData);
     }
 }

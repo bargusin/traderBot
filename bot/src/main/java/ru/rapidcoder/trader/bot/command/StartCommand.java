@@ -22,7 +22,7 @@ public class StartCommand extends AbstractCommand {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
-        rows.add(List.of(InterfaceFactory.createButton("\uD83D\uDCAC Помощь", "/help")));
+        rows.add(List.of(InterfaceFactory.createButton("⚙\uFE0F Настройки", "/settings"), InterfaceFactory.createButton("\uD83D\uDCAC Помощь", "/help")));
         keyboard.setKeyboard(rows);
 
         processMessage(update, text, keyboard);
