@@ -10,10 +10,9 @@ public class TradingService {
     private static TradingService instance;
 
     private TradingService() {
-
     }
 
-    public static TradingService getTradingService() {
+    public static synchronized TradingService getTradingService() {
         if (instance == null) {
             instance = new TradingService();
         }
