@@ -1,7 +1,7 @@
 package ru.rapidcoder.trader.core.database.repository.test;
 
 import org.junit.jupiter.api.*;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.entity.UserSetting;

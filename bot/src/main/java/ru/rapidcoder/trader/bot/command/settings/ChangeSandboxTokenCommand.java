@@ -6,7 +6,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.handler.InputHandler;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.tinkoff.piapi.core.InvestApi;
 
 import java.util.ArrayList;

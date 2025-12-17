@@ -1,4 +1,4 @@
-package ru.rapidcoder.trader.core;
+package ru.rapidcoder.trader.core.service;
 
 public enum TradingMode {
 

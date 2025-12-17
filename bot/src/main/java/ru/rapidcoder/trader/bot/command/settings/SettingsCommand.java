@@ -7,7 +7,7 @@ import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.AbstractCommand;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.component.KeyboardButton;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 
 import java.util.ArrayList;
 import java.util.List;

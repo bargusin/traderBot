@@ -12,7 +12,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.rapidcoder.trader.bot.handler.MessageHandler;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 
 public class Bot extends TelegramLongPollingBot {

@@ -1,6 +1,6 @@
 package ru.rapidcoder.trader.bot;
 
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 
 public class BotContext {
 

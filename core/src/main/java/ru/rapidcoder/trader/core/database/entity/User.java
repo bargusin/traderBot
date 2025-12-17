@@ -1,7 +1,7 @@
 package ru.rapidcoder.trader.core.database.entity;
 
 import jakarta.persistence.*;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 
 import java.time.Instant;
 import java.util.ArrayList;
