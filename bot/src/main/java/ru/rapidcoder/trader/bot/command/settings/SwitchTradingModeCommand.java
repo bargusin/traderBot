@@ -21,13 +21,6 @@ public class SwitchTradingModeCommand extends AbstractCommand {
     public void execute(Update update) {
         TradingMode mode = TradingMode.valueOf(getSuffix(update.getCallbackQuery()
                 .getData()));
-        bot.getTradingSessionManager()
-                .switchMode(getChatId(update), mode);
-
-        String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                .getCurrentMode(getChatId(update)), "\uD83C\uDFE0 <b>Смена режима работы бота</b>");
-
-        text += "\n\nРежим работы бота успешно изменен на <b>" + mode + "</b>\n";
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
@@ -35,6 +28,19 @@ public class SwitchTradingModeCommand extends AbstractCommand {
         rows.add(List.of(InterfaceFactory.createButton("⚙\uFE0F Настройки", "/settings")));
         keyboard.setKeyboard(rows);
 
-        processMessage(update, text, keyboard);
+        try {
+            bot.getTradingSessionManager()
+                    .switchMode(getChatId(update), mode);
+
+            String text = InterfaceFactory.format(bot.getTradingSessionManager()
+                    .getCurrentMode(getChatId(update)), "\uD83C\uDFE0 <b>Смена режима работы бота</b>");
+
+            text += "\n\nРежим работы бота успешно изменен на <b>" + mode + "</b>\n";
+
+            processMessage(update, text, keyboard);
+        } catch (IllegalArgumentException |
+                 IllegalStateException e) {
+            processMessage(update, "\uD83D\uDEAB " + e.getMessage(), keyboard);
+        }
     }
 }

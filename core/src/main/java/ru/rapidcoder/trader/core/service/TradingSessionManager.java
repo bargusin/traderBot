@@ -32,43 +32,29 @@ public class TradingSessionManager {
     }
 
     public TradingMode getCurrentMode(Long chatId) {
-        return getSession(chatId).getMode();
+        if (sessionCache.containsKey(chatId)) {
+            return sessionCache.get(chatId)
+                    .getMode();
+        }
+        return TradingMode.SANDBOX;
     }
 
     public void switchMode(Long chatId, TradingMode newMode) {
         logger.info("Переключение режима для пользователя {} на {}", chatId, newMode);
-
-        // 1. Ищем пользователя в БД
         User user = userRepository.findByChatId(chatId)
                 .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
 
-        // 2. Ищем токен для запрашиваемого режима
         String encryptedToken = user.getSettingByMode(TradingMode.valueOf(newMode.getStorageKey()))
                 .map(UserSetting::getEncryptedToken)
                 .orElseThrow(() -> new IllegalArgumentException("Токен для режима " + newMode.getStorageKey() + " не установлен. Сначала добавьте токен."));
 
-        // 3. Расшифровываем
         String token = encryptionService.decrypt(encryptedToken);
-
-        // 4. Создаем новое соединение с API
         InvestApi newApi = createApiInstance(token, newMode);
-
-        // 5. Закрываем старую сессию (если была), чтобы освободить ресурсы gRPC
-        removeSession(chatId);
-
-        // 6. Сохраняем новую сессию в кеш
         sessionCache.put(chatId, new TradingUserSession(newApi, newMode));
-
-        // 7. (Опционально) Можно обновить "последний активный режим" в базе данных,
-        // если вы хотите, чтобы после рестарта бот помнил режим.
     }
 
     private TradingUserSession getSession(Long chatId) {
-        // Если сессия уже есть в памяти - возвращаем её
-        if (sessionCache.containsKey(chatId)) {
-            return sessionCache.get(chatId);
-        }
-        return createSession(chatId);
+        return sessionCache.computeIfAbsent(chatId, this::createSession);
     }
 
     private TradingUserSession createSession(Long chatId) {
@@ -78,15 +64,12 @@ public class TradingSessionManager {
         TradingMode modeToRestore = TradingMode.SANDBOX;
         Optional<UserSetting> settingOpt = user.getSettingByMode(modeToRestore);
         if (settingOpt.isEmpty()) {
-            throw new IllegalStateException("Нет активных токенов для режима SANDBOX");
+            throw new IllegalStateException("Нет активного токена для режима SANDBOX");
         }
         String token = encryptionService.decrypt(settingOpt.get()
                 .getEncryptedToken());
         InvestApi api = createApiInstance(token, modeToRestore);
-
-        TradingUserSession session = new TradingUserSession(api, modeToRestore);
-        sessionCache.put(chatId, session);
-        return session;
+        return new TradingUserSession(api, modeToRestore);
     }
 
     private InvestApi createApiInstance(String token, TradingMode mode) {
@@ -100,13 +83,6 @@ public class TradingSessionManager {
     }
 
     public void removeSession(Long chatId) {
-        TradingUserSession removed = sessionCache.remove(chatId);
-        if (removed != null) {
-            // ВАЖНО: Уничтожаем каналы gRPC, чтобы не текли ресурсы
-            // В SDK метод destroy() или аналог закрывает каналы (в версии 1.x это может быть скрыто,
-            // но сборщик мусора должен отработать, если ссылок нет.
-            // Однако лучше проверить документацию вашей версии SDK, есть ли метод stop/close).
-            // В текущей версии PIAPI явного close() у InvestApi нет, он управляется внутри.
-        }
+        sessionCache.remove(chatId);
     }
 }
