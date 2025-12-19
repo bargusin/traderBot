@@ -30,7 +30,8 @@ public class StartCommand extends AbstractCommand {
             user.setUserName(getUserName(update));
             userRepository.save(user);
         }
-        String text = InterfaceFactory.format("\uD83C\uDFE0 <b>Главное меню</b>");
+        String text = InterfaceFactory.format(bot.getTradingSessionManager()
+                .getCurrentMode(getChatId(update)), "\uD83C\uDFE0 <b>Главное меню</b>");
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();

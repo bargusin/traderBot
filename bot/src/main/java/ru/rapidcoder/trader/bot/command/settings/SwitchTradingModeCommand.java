@@ -4,7 +4,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.rapidcoder.trader.bot.Bot;
-import ru.rapidcoder.trader.bot.BotContext;
 import ru.rapidcoder.trader.bot.command.AbstractCommand;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.core.service.TradingMode;
@@ -22,10 +21,11 @@ public class SwitchTradingModeCommand extends AbstractCommand {
     public void execute(Update update) {
         TradingMode mode = TradingMode.valueOf(getSuffix(update.getCallbackQuery()
                 .getData()));
-        BotContext.getInstance()
-                .setMode(mode);
+        bot.getTradingSessionManager()
+                .switchMode(getChatId(update), mode);
 
-        String text = InterfaceFactory.format("\uD83C\uDFE0 <b>Смена режима работы бота</b>");
+        String text = InterfaceFactory.format(bot.getTradingSessionManager()
+                .getCurrentMode(getChatId(update)), "\uD83C\uDFE0 <b>Смена режима работы бота</b>");
 
         text += "\n\nРежим работы бота успешно изменен на <b>" + mode + "</b>\n";
 

@@ -20,7 +20,8 @@ public class SettingsCommand extends AbstractCommand {
 
     @Override
     public void execute(Update update) {
-        String text = InterfaceFactory.format("⚙\uFE0F <b>Настройки</b>");
+        String text = InterfaceFactory.format(bot.getTradingSessionManager()
+                .getCurrentMode(getChatId(update)), "⚙\uFE0F <b>Настройки</b>");
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
