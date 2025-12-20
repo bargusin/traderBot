@@ -7,7 +7,7 @@ import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.AbstractCommand;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.component.KeyboardButton;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,8 @@ public class SettingsCommand extends AbstractCommand {
 
     @Override
     public void execute(Update update) {
-        String text = InterfaceFactory.format("⚙\uFE0F <b>Настройки</b>");
+        String text = InterfaceFactory.format(bot.getTradingSessionManager()
+                .getCurrentMode(getChatId(update)), "⚙\uFE0F <b>Настройки</b>");
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();

@@ -18,8 +18,14 @@ public class Main {
             String encryptedKey = System.getenv(environment + "EncryptedKey");
             String storageFile = System.getenv(environment + "StorageFile");
 
+            SettingsBot settings = new SettingsBot();
+            settings.setBotName(botName);
+            settings.setTokenId(tokenId);
+            settings.setEncryptedKey(encryptedKey);
+            settings.setStorageFile(storageFile);
+
             TelegramBotsApi telegramBotsApi = createTelegramBotsApi();
-            Bot bot = createBot(botName, tokenId, encryptedKey, storageFile);
+            Bot bot = createBot(settings);
             telegramBotsApi.registerBot(bot);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -30,7 +36,7 @@ public class Main {
         return new TelegramBotsApi(DefaultBotSession.class);
     }
 
-    public static Bot createBot(String botName, String tokenId, String encryptedKey, String storageFile) {
-        return new Bot(botName, tokenId, encryptedKey, storageFile);
+    public static Bot createBot(SettingsBot settings) {
+        return new Bot(settings);
     }
 }

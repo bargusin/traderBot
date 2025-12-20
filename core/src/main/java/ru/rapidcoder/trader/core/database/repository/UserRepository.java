@@ -3,7 +3,7 @@ package ru.rapidcoder.trader.core.database.repository;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.entity.UserSetting;

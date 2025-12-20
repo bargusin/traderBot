@@ -1,4 +1,4 @@
-package ru.rapidcoder.trader.core;
+package ru.rapidcoder.trader.core.service;
 
 public enum TradingMode {
 
@@ -18,5 +18,12 @@ public enum TradingMode {
 
     public boolean isTradingAllowed() {
         return tradingAllowed;
+    }
+
+    public String getStorageKey() {
+        if (this == READONLY) {
+            return PRODUCTION.name();
+        }
+        return this.name();
     }
 }

@@ -3,7 +3,7 @@ package ru.rapidcoder.trader.bot.command.settings;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.AbstractCommand;
-import ru.rapidcoder.trader.core.TradingMode;
+import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.rapidcoder.trader.core.database.repository.UserRepository;
 import ru.rapidcoder.trader.core.service.EncryptionService;
 

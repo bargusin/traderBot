@@ -12,8 +12,10 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.rapidcoder.trader.bot.handler.MessageHandler;
-import ru.rapidcoder.trader.core.TradingMode;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
+import ru.rapidcoder.trader.core.database.repository.UserRepository;
+import ru.rapidcoder.trader.core.service.EncryptionService;
+import ru.rapidcoder.trader.core.service.TradingSessionManager;
 
 public class Bot extends TelegramLongPollingBot {
 
@@ -22,17 +24,17 @@ public class Bot extends TelegramLongPollingBot {
     private final String botName;
     private final DatabaseManager databaseManager;
     private final String encryptedKey;
+    private final TradingSessionManager tradingSessionManager;
 
-    public Bot(String botName, String tokenId, String encryptedKey, String storageFile) {
-        super(tokenId);
-        this.botName = botName;
+    public Bot(SettingsBot settings) {
+        super(settings.getTokenId());
+        this.botName = settings.getBotName();
 
-        this.databaseManager = DatabaseManager.getInstance(storageFile);
-        this.encryptedKey = encryptedKey;
-        BotContext.getInstance()
-                .setMode(TradingMode.SANDBOX);
+        this.databaseManager = DatabaseManager.getInstance(settings.getStorageFile());
+        this.encryptedKey = settings.getEncryptedKey();
 
         this.messageHandler = new MessageHandler(this);
+        this.tradingSessionManager = new TradingSessionManager(new UserRepository(databaseManager), new EncryptionService(encryptedKey));
     }
 
     @Override
@@ -78,6 +80,10 @@ public class Bot extends TelegramLongPollingBot {
 
     public String getEncryptedKey() {
         return encryptedKey;
+    }
+
+    public TradingSessionManager getTradingSessionManager() {
+        return tradingSessionManager;
     }
 
     public void sendMessage(Long chatId, String text, InlineKeyboardMarkup keyboard) {
