@@ -114,7 +114,7 @@ public class TradingService {
             List<Account> accounts = sandboxService.getAccounts()
                     .get();
             for (Account account : accounts) {
-                sandboxService.closeAccountSync(account.getId());
+                //sandboxService.closeAccountSync(account.getId());
                 System.out.println("Счет " + account.getId() + " закрыт.");
             }
 

@@ -5,8 +5,10 @@ import org.slf4j.LoggerFactory;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.entity.UserSetting;
 import ru.rapidcoder.trader.core.database.repository.UserRepository;
+import ru.tinkoff.piapi.contract.v1.Account;
 import ru.tinkoff.piapi.core.InvestApi;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,11 +21,14 @@ public class TradingSessionManager {
 
     private final EncryptionService encryptionService;
 
+    private final AccountService accountService;
+
     private final Map<Long, TradingUserSession> sessionCache = new ConcurrentHashMap<>();
 
     public TradingSessionManager(UserRepository userRepository, EncryptionService encryptionService) {
         this.userRepository = userRepository;
         this.encryptionService = encryptionService;
+        this.accountService = new AccountService(this);
     }
 
     public InvestApi getApi(Long chatId) {
@@ -84,5 +89,9 @@ public class TradingSessionManager {
 
     public void removeSession(Long chatId) {
         sessionCache.remove(chatId);
+    }
+
+    public AccountService getAccountService() {
+        return accountService;
     }
 }

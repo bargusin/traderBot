@@ -28,6 +28,7 @@ public class SettingsCommand extends AbstractCommand {
 
         rows.add(List.of(createTradingModeButton(TradingMode.SANDBOX), createTradingModeButton(TradingMode.READONLY), createTradingModeButton(TradingMode.PRODUCTION)));
         rows.add(List.of(InterfaceFactory.createButton("✏\uFE0F SANDBOX_TOKEN", "change_sandbox_token"), InterfaceFactory.createButton("✏\uFE0F PRODUCTION_TOKEN", "change_production_token")));
+        rows.add(List.of(InterfaceFactory.createButton("\uD83D\uDCB0 Счета", "/account")));
         rows.add(List.of(InterfaceFactory.createButton("\uD83C\uDFE0 Главное меню", "back_to_main")));
         keyboard.setKeyboard(rows);
 
