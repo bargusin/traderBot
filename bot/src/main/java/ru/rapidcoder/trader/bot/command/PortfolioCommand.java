@@ -42,7 +42,7 @@ public class PortfolioCommand extends AbstractCommand {
                 .getCurrentAccountId(chatId);
 
         if (StringUtils.isEmpty(accountId)) {
-            processMessage(update, text + "\n\n\uD83D\uDEAB Счет не определен", keyboard);
+            processMessage(update, text + "\n\n\uD83D\uDEAB Счет не определен /account", keyboard);
         } else {
             investApi.getOperationsService()
                     .getPortfolio(accountId)
