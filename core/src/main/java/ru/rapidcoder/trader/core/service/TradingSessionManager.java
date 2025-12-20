@@ -19,11 +19,14 @@ public class TradingSessionManager {
 
     private final EncryptionService encryptionService;
 
+    private final AccountService accountService;
+
     private final Map<Long, TradingUserSession> sessionCache = new ConcurrentHashMap<>();
 
     public TradingSessionManager(UserRepository userRepository, EncryptionService encryptionService) {
         this.userRepository = userRepository;
         this.encryptionService = encryptionService;
+        this.accountService = new AccountService(this);
     }
 
     public InvestApi getApi(Long chatId) {
@@ -84,5 +87,9 @@ public class TradingSessionManager {
 
     public void removeSession(Long chatId) {
         sessionCache.remove(chatId);
+    }
+
+    public AccountService getAccountService() {
+        return accountService;
     }
 }
