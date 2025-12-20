@@ -62,7 +62,7 @@ public class TradingSessionManager {
         String token = encryptionService.decrypt(encryptedToken);
         userRepository.updateTradingMode(chatId, newMode);
         InvestApi newApi = createApiInstance(token, newMode);
-        sessionCache.put(chatId, new TradingUserSession(newApi, newMode, user.getCurrentAccountId()));
+        sessionCache.put(chatId, new TradingUserSession(newApi, newMode, null));
     }
 
     public void switchAccountId(Long chatId, String newAccountId) {
