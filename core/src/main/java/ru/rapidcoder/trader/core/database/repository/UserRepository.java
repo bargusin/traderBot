@@ -81,6 +81,7 @@ public class UserRepository {
                     .uniqueResult();
             if (user != null) {
                 user.setCurrentMode(newMode);
+                user.setCurrentAccountId(null);
                 logger.info("Установлен новый режим торговли {} для пользователя {}", newMode, chatId);
                 session.merge(user);
                 session.flush();

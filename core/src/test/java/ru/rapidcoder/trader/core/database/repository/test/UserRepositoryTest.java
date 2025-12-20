@@ -160,6 +160,7 @@ public class UserRepositoryTest {
         assertEquals(savedUser.getUserName(), foundUser.getUserName());
         assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
         assertNotEquals(savedUser.getCurrentMode(), foundUser.getCurrentMode());
+        assertEquals(foundUser.getCurrentMode(), TradingMode.PRODUCTION);
     }
 
     @Test
@@ -183,6 +184,33 @@ public class UserRepositoryTest {
         assertEquals(savedUser.getChatId(), foundUser.getChatId());
         assertEquals(savedUser.getUserName(), foundUser.getUserName());
         assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
-        assertNotEquals(savedUser.getCurrentAccountId(), foundUser.getCurrentAccountId());
+        assertEquals(foundUser.getCurrentAccountId(), "1");
+        assertEquals(foundUser.getCurrentMode(), TradingMode.SANDBOX);
+    }
+
+    @Test
+    @DisplayName("Интеграционный тест: Изменение типа торговли у пользователя со сбросом идентификатора счета")
+    void testUpdateTradingModeAndAccountId() {
+        User newUser = new User();
+        newUser.setChatId(100L);
+        newUser.setUserName("Trader");
+        newUser.setCurrentMode(TradingMode.SANDBOX);
+        newUser.setCurrentAccountId("1");
+
+        User savedUser = userRepository.save(newUser);
+        assertNotNull(savedUser);
+        assertNotNull(savedUser.getChatId());
+
+        userRepository.updateTradingMode(100L, TradingMode.PRODUCTION);
+
+        Optional<User> refreshedOpt = userRepository.findByChatId(100L);
+        assertTrue(refreshedOpt.isPresent());
+        User foundUser = refreshedOpt.get();
+
+        assertEquals(savedUser.getChatId(), foundUser.getChatId());
+        assertEquals(savedUser.getUserName(), foundUser.getUserName());
+        assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
+        assertNull(foundUser.getCurrentAccountId());
+        assertEquals(foundUser.getCurrentMode(), TradingMode.PRODUCTION);
     }
 }
