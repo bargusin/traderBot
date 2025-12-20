@@ -19,6 +19,13 @@ public class User {
     @Column(name = "user_name")
     private String userName;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "current_mode")
+    private TradingMode currentMode;
+
+    @Column(name = "current_account_id")
+    private String currentAccountId;
+
     @Column(name = "created_at")
     private Instant createdAt;
 
@@ -66,5 +73,21 @@ public class User {
 
     public List<UserSetting> getSettings() {
         return settings;
+    }
+
+    public TradingMode getCurrentMode() {
+        return currentMode;
+    }
+
+    public void setCurrentMode(TradingMode currentMode) {
+        this.currentMode = currentMode;
+    }
+
+    public String getCurrentAccountId() {
+        return currentAccountId;
+    }
+
+    public void setCurrentAccountId(String currentAccountId) {
+        this.currentAccountId = currentAccountId;
     }
 }

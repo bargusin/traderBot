@@ -25,8 +25,10 @@ public class PortfolioCommand extends AbstractCommand {
 
     @Override
     public void execute(Update update) {
+        Long chatId = getChatId(update);
+
         String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                .getCurrentMode(getChatId(update)), "\uD83D\uDCBC <b>Управление портфелем</b>");
+                .getCurrentMode(chatId), "\uD83D\uDCBC <b>Управление портфелем</b>");
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
@@ -35,11 +37,9 @@ public class PortfolioCommand extends AbstractCommand {
         keyboard.setKeyboard(rows);
 
         InvestApi investApi = bot.getTradingSessionManager()
-                .getApi(getChatId(update));
-
+                .getApi(chatId);
         String accountId = bot.getTradingSessionManager()
-                .getAccountService()
-                .getAccountId();
+                .getCurrentAccountId(chatId);
 
         if (StringUtils.isEmpty(accountId)) {
             processMessage(update, text + "\n\n\uD83D\uDEAB Счет не определен", keyboard);

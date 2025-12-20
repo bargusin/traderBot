@@ -1,12 +1,12 @@
 package ru.rapidcoder.trader.core.database.repository.test;
 
 import org.junit.jupiter.api.*;
-import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.entity.UserSetting;
 import ru.rapidcoder.trader.core.database.repository.UserRepository;
 import ru.rapidcoder.trader.core.service.EncryptionService;
+import ru.rapidcoder.trader.core.service.TradingMode;
 
 import javax.crypto.KeyGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -92,7 +92,7 @@ public class UserRepositoryTest {
 
     @Test
     @DisplayName("Интеграционный тест: Изменение настроек пользователя (Find -> Update -> Find)")
-    void testUpdateTradingMode() {
+    void testUpdateTradingToken() {
         User newUser = new User();
         newUser.setChatId(100L);
         newUser.setUserName("Trader");
@@ -136,5 +136,53 @@ public class UserRepositoryTest {
         assertNotNull(savedUser.getChatId());
 
         assertTrue(userRepository.existsByChatId(100L), "Пользователь должен быть найден");
+    }
+
+    @Test
+    @DisplayName("Интеграционный тест: Изменение типа торговли у пользователя")
+    void testUpdateTradingMode() {
+        User newUser = new User();
+        newUser.setChatId(100L);
+        newUser.setUserName("Trader");
+        newUser.setCurrentMode(TradingMode.SANDBOX);
+
+        User savedUser = userRepository.save(newUser);
+        assertNotNull(savedUser);
+        assertNotNull(savedUser.getChatId());
+
+        userRepository.updateTradingMode(100L, TradingMode.PRODUCTION);
+
+        Optional<User> refreshedOpt = userRepository.findByChatId(100L);
+        assertTrue(refreshedOpt.isPresent());
+        User foundUser = refreshedOpt.get();
+
+        assertEquals(savedUser.getChatId(), foundUser.getChatId());
+        assertEquals(savedUser.getUserName(), foundUser.getUserName());
+        assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
+        assertNotEquals(savedUser.getCurrentMode(), foundUser.getCurrentMode());
+    }
+
+    @Test
+    @DisplayName("Интеграционный тест: Изменение текущего идентификатора счета у пользователя")
+    void testUpdateAccountId() {
+        User newUser = new User();
+        newUser.setChatId(100L);
+        newUser.setUserName("Trader");
+        newUser.setCurrentMode(TradingMode.SANDBOX);
+
+        User savedUser = userRepository.save(newUser);
+        assertNotNull(savedUser);
+        assertNotNull(savedUser.getChatId());
+
+        userRepository.updateAccountId(100L, "1");
+
+        Optional<User> refreshedOpt = userRepository.findByChatId(100L);
+        assertTrue(refreshedOpt.isPresent());
+        User foundUser = refreshedOpt.get();
+
+        assertEquals(savedUser.getChatId(), foundUser.getChatId());
+        assertEquals(savedUser.getUserName(), foundUser.getUserName());
+        assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
+        assertNotEquals(savedUser.getCurrentAccountId(), foundUser.getCurrentAccountId());
     }
 }

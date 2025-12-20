@@ -126,6 +126,40 @@ public class TradingSessionManagerTest {
         TradingMode currentMode = sessionManager.getCurrentMode(chatId);
         assertEquals(TradingMode.PRODUCTION, currentMode);
 
+        verify(userRepository, times(1)).updateTradingMode(chatId, TradingMode.PRODUCTION);
+        investApiMockedStatic.verify(() -> InvestApi.create("dec_prod"));
+    }
+
+    @Test
+    @DisplayName("switchMode: Должен изменить идентификатор счета и обновить кеш")
+    void testSwitchAccountIdSuccess() {
+        Long chatId = 123L;
+        String newAccountId = "1";
+
+        User user = mock(User.class);
+        when(user.getCurrentMode()).thenReturn(TradingMode.PRODUCTION);
+        UserSetting setting = mock(UserSetting.class);
+
+        when(userRepository.findByChatId(chatId)).thenReturn(Optional.of(user));
+
+        when(user.getSettingByMode(TradingMode.PRODUCTION)).thenReturn(Optional.of(setting));
+
+        when(setting.getEncryptedToken()).thenReturn("enc_prod");
+        when(encryptionService.decrypt("enc_prod")).thenReturn("dec_prod");
+
+        investApiMockedStatic.when(() -> InvestApi.create("dec_prod"))
+                .thenReturn(investApiMock);
+
+        String currentAccountId = sessionManager.getCurrentAccountId(chatId);
+        assertNull(currentAccountId);
+
+        sessionManager.switchAccountId(chatId, newAccountId);
+
+        verify(userRepository, times(1)).updateAccountId(chatId, newAccountId);
+
+        currentAccountId = sessionManager.getCurrentAccountId(chatId);
+        assertNotNull(currentAccountId);
+
         investApiMockedStatic.verify(() -> InvestApi.create("dec_prod"));
     }
 
@@ -175,9 +209,11 @@ public class TradingSessionManagerTest {
     }
 
     @Test
-    @DisplayName("getCurrentMode: Должен возвращать SANDBOX по умолчанию, если сессии нет")
+    @DisplayName("getCurrentMode: Должен выбросить IllegalStateException, если пользователя нет в базе данных")
     void testGetCurrentModeDefault() {
-        assertEquals(TradingMode.SANDBOX, sessionManager.getCurrentMode(999L));
+        assertThrows(IllegalStateException.class, () -> {
+            sessionManager.getCurrentMode(999L);
+        });
     }
 
     @Test

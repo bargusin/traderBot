@@ -7,6 +7,7 @@ import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.repository.UserRepository;
+import ru.rapidcoder.trader.core.service.TradingMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,8 +29,10 @@ public class StartCommand extends AbstractCommand {
             User user = new User();
             user.setChatId(getChatId(update));
             user.setUserName(getUserName(update));
+            user.setCurrentMode(TradingMode.SANDBOX);
             userRepository.save(user);
         }
+
         String text = InterfaceFactory.format(bot.getTradingSessionManager()
                 .getCurrentMode(getChatId(update)), "\uD83C\uDFE0 <b>Главное меню</b>");
 

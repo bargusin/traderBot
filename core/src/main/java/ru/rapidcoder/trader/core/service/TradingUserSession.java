@@ -6,11 +6,13 @@ public class TradingUserSession {
 
     private final InvestApi api;
     private final TradingMode mode;
+    private final String accountId;
     private final long lastAccessTime;
 
-    public TradingUserSession(InvestApi api, TradingMode mode) {
+    public TradingUserSession(InvestApi api, TradingMode mode, String accountId) {
         this.api = api;
         this.mode = mode;
+        this.accountId = accountId;
         this.lastAccessTime = System.currentTimeMillis();
     }
 
@@ -20,6 +22,10 @@ public class TradingUserSession {
 
     public TradingMode getMode() {
         return mode;
+    }
+
+    public String getAccountId() {
+        return accountId;
     }
 
     public long getLastAccessTime() {

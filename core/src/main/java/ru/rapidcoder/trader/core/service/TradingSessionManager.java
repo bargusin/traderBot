@@ -39,7 +39,15 @@ public class TradingSessionManager {
             return sessionCache.get(chatId)
                     .getMode();
         }
-        return TradingMode.SANDBOX;
+        return getSession(chatId).getMode();
+    }
+
+    public String getCurrentAccountId(Long chatId) {
+        if (sessionCache.containsKey(chatId)) {
+            return sessionCache.get(chatId)
+                    .getAccountId();
+        }
+        return getSession(chatId).getAccountId();
     }
 
     public void switchMode(Long chatId, TradingMode newMode) {
@@ -52,8 +60,18 @@ public class TradingSessionManager {
                 .orElseThrow(() -> new IllegalArgumentException("Токен для режима " + newMode.getStorageKey() + " не установлен. Сначала добавьте токен."));
 
         String token = encryptionService.decrypt(encryptedToken);
+        userRepository.updateTradingMode(chatId, newMode);
         InvestApi newApi = createApiInstance(token, newMode);
-        sessionCache.put(chatId, new TradingUserSession(newApi, newMode));
+        sessionCache.put(chatId, new TradingUserSession(newApi, newMode, user.getCurrentAccountId()));
+    }
+
+    public void switchAccountId(Long chatId, String newAccountId) {
+        logger.info("Установка идентификатора счета {} для пользователя {}", newAccountId, chatId);
+        userRepository.findByChatId(chatId)
+                .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
+        userRepository.updateAccountId(chatId, newAccountId);
+        TradingUserSession currentSession = getSession(chatId);
+        sessionCache.put(chatId, new TradingUserSession(currentSession.getApi(), currentSession.getMode(), newAccountId));
     }
 
     private TradingUserSession getSession(Long chatId) {
@@ -64,15 +82,18 @@ public class TradingSessionManager {
         logger.info("Создание сессии для {}", chatId);
         User user = userRepository.findByChatId(chatId)
                 .orElseThrow(() -> new IllegalStateException("Пользователь не зарегистрирован"));
-        TradingMode modeToRestore = TradingMode.SANDBOX;
-        Optional<UserSetting> settingOpt = user.getSettingByMode(modeToRestore);
+        TradingMode modeToRestore = user.getCurrentMode();
+        if (modeToRestore == null) {
+            modeToRestore = TradingMode.SANDBOX;
+        }
+        Optional<UserSetting> settingOpt = user.getSettingByMode(modeToRestore == TradingMode.READONLY ? TradingMode.PRODUCTION : modeToRestore);
         if (settingOpt.isEmpty()) {
-            throw new IllegalStateException("Нет активного токена для режима SANDBOX");
+            throw new IllegalStateException("Нет активного токена для режима " + modeToRestore);
         }
         String token = encryptionService.decrypt(settingOpt.get()
                 .getEncryptedToken());
         InvestApi api = createApiInstance(token, modeToRestore);
-        return new TradingUserSession(api, modeToRestore);
+        return new TradingUserSession(api, modeToRestore, user.getCurrentAccountId());
     }
 
     private InvestApi createApiInstance(String token, TradingMode mode) {
