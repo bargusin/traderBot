@@ -3,10 +3,10 @@ package ru.rapidcoder.trader.core.database.repository;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.entity.UserSetting;
+import ru.rapidcoder.trader.core.service.TradingMode;
 
 import java.util.Optional;
 
@@ -68,6 +68,45 @@ public class UserRepository {
             } else {
                 logger.warn("Попытка обновить токен для несуществующего пользователя: {}", chatId);
                 throw new RuntimeException("Попытка обновить токен для несуществующего пользователя: " + chatId);
+            }
+            return null;
+        });
+    }
+
+    public void updateTradingMode(Long chatId, TradingMode newMode) {
+        databaseManager.executeInTransaction(session -> {
+            String hql = "SELECT u FROM User u WHERE u.chatId = :chatId";
+            User user = session.createQuery(hql, User.class)
+                    .setParameter("chatId", chatId)
+                    .uniqueResult();
+            if (user != null) {
+                user.setCurrentMode(newMode);
+                user.setCurrentAccountId(null);
+                logger.info("Установлен новый режим торговли {} для пользователя {}", newMode, chatId);
+                session.merge(user);
+                session.flush();
+            } else {
+                logger.warn("Попытка установить новый режим торговли для несуществующего пользователя: {}", chatId);
+                throw new RuntimeException("Попытка установить новый режим торговли для несуществующего пользователя: " + chatId);
+            }
+            return null;
+        });
+    }
+
+    public void updateAccountId(Long chatId, String newAccountId) {
+        databaseManager.executeInTransaction(session -> {
+            String hql = "SELECT u FROM User u WHERE u.chatId = :chatId";
+            User user = session.createQuery(hql, User.class)
+                    .setParameter("chatId", chatId)
+                    .uniqueResult();
+            if (user != null) {
+                user.setCurrentAccountId(newAccountId);
+                logger.info("Установлен новый идентификатор счета {} для пользователя {}", newAccountId, chatId);
+                session.merge(user);
+                session.flush();
+            } else {
+                logger.warn("Попытка установить новый идентификатор счета для несуществующего пользователя: {}", chatId);
+                throw new RuntimeException("Попытка установить новый идентификатор счета для несуществующего пользователя: " + chatId);
             }
             return null;
         });

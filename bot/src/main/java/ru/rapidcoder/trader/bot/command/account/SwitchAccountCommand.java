@@ -25,8 +25,7 @@ public class SwitchAccountCommand extends AbstractCommand {
                 .getData());
 
         bot.getTradingSessionManager()
-                .getAccountService()
-                .setAccountId(accountId);
+                .switchAccountId(getChatId(update), accountId);
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();

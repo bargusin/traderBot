@@ -30,7 +30,6 @@ public class AccountCommand extends AbstractCommand {
                 .getAccountService()
                 .getActiveAccounts(getChatId(update))
                 .handle((accounts, ex) -> {
-                    // 1. Логика наполнения (Success path)
                     if (ex == null && accounts != null) {
                         for (Account account : accounts) {
                             rows.add(List.of(createAccountButton(account)));
@@ -39,11 +38,8 @@ public class AccountCommand extends AbstractCommand {
                     rows.add(List.of(InterfaceFactory.createButton("\uD83C\uDFE0 Главное меню", "back_to_main")));
                     keyboard.setKeyboard(rows);
 
-                    // 3. Формирование текста (зависит от того, была ошибка или нет)
                     String finalText = (ex == null) ? text : text + "\n\n\uD83D\uDEAB Не удалось получить список счетов: " + ex.getMessage();
-
                     processMessage(update, finalText, keyboard);
-
                     return null;
                 });
     }
