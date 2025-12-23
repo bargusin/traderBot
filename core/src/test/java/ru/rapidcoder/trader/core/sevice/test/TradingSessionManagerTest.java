@@ -57,6 +57,7 @@ public class TradingSessionManagerTest {
         String decryptedToken = "dec_token";
 
         User user = mock(User.class);
+        when(user.getCurrentMode()).thenReturn(TradingMode.SANDBOX);
         UserSetting setting = mock(UserSetting.class);
 
         when(userRepository.findByChatId(chatId)).thenReturn(Optional.of(user));
@@ -84,6 +85,7 @@ public class TradingSessionManagerTest {
         Long chatId = 123L;
 
         User user = mock(User.class);
+        when(user.getCurrentMode()).thenReturn(TradingMode.SANDBOX);
         UserSetting setting = mock(UserSetting.class);
         when(userRepository.findByChatId(chatId)).thenReturn(Optional.of(user));
         when(user.getSettingByMode(TradingMode.SANDBOX)).thenReturn(Optional.of(setting));
@@ -106,13 +108,10 @@ public class TradingSessionManagerTest {
     @DisplayName("switchMode: Должен переключить режим на PRODUCTION и обновить кеш")
     void testSwitchModeSuccess() {
         Long chatId = 123L;
-        TradingMode newMode = TradingMode.PRODUCTION;
 
         User user = mock(User.class);
         UserSetting setting = mock(UserSetting.class);
-
         when(userRepository.findByChatId(chatId)).thenReturn(Optional.of(user));
-
         when(user.getSettingByMode(TradingMode.PRODUCTION)).thenReturn(Optional.of(setting));
 
         when(setting.getEncryptedToken()).thenReturn("enc_prod");
@@ -121,7 +120,7 @@ public class TradingSessionManagerTest {
         investApiMockedStatic.when(() -> InvestApi.create("dec_prod"))
                 .thenReturn(investApiMock);
 
-        sessionManager.switchMode(chatId, newMode);
+        sessionManager.switchMode(chatId, TradingMode.PRODUCTION);
 
         TradingMode currentMode = sessionManager.getCurrentMode(chatId);
         assertEquals(TradingMode.PRODUCTION, currentMode);
@@ -221,7 +220,7 @@ public class TradingSessionManagerTest {
     void testCreateSessionNoSandboxToken() {
         Long chatId = 444L;
         User user = mock(User.class);
-
+        when(user.getCurrentMode()).thenReturn(TradingMode.SANDBOX);
         when(userRepository.findByChatId(chatId)).thenReturn(Optional.of(user));
         when(user.getSettingByMode(TradingMode.SANDBOX)).thenReturn(Optional.empty());
 
@@ -239,6 +238,7 @@ public class TradingSessionManagerTest {
         Long chatId = 123L;
 
         User user = mock(User.class);
+        when(user.getCurrentMode()).thenReturn(TradingMode.SANDBOX);
         UserSetting setting = mock(UserSetting.class);
         when(userRepository.findByChatId(chatId)).thenReturn(Optional.of(user));
         when(user.getSettingByMode(TradingMode.SANDBOX)).thenReturn(Optional.of(setting));

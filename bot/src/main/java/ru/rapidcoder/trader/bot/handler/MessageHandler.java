@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import ru.rapidcoder.trader.bot.Bot;
-import ru.rapidcoder.trader.bot.command.CommandRegistry;
-import ru.rapidcoder.trader.bot.command.HelpCommand;
-import ru.rapidcoder.trader.bot.command.PortfolioCommand;
-import ru.rapidcoder.trader.bot.command.StartCommand;
+import ru.rapidcoder.trader.bot.command.*;
 import ru.rapidcoder.trader.bot.command.account.AccountCommand;
 import ru.rapidcoder.trader.bot.command.account.SwitchAccountCommand;
 import ru.rapidcoder.trader.bot.command.settings.ChangeProductionTokenCommand;
@@ -15,6 +12,7 @@ import ru.rapidcoder.trader.bot.command.settings.ChangeSandboxTokenCommand;
 import ru.rapidcoder.trader.bot.command.settings.SettingsCommand;
 import ru.rapidcoder.trader.bot.command.settings.SwitchTradingModeCommand;
 import ru.rapidcoder.trader.bot.service.UserStateService;
+import ru.rapidcoder.trader.core.exception.TokenNotFound;
 
 public class MessageHandler {
 
@@ -69,9 +67,14 @@ public class MessageHandler {
                 return;
             }
 
-            commandRegistry.retrieveCommand(update.getMessage()
-                            .getText())
-                    .execute(update);
+            try {
+                commandRegistry.retrieveCommand(update.getMessage()
+                                .getText())
+                        .execute(update);
+            } catch (TokenNotFound e) {
+                bot.sendMessage(userId, "Доступ к боту запрещен " + e.getMessage(), null);
+                executeCommand("change_sandbox_token", update);
+            }
         }
     }
 
@@ -89,8 +92,28 @@ public class MessageHandler {
             if (index > 0) {
                 callbackData = callbackData.substring(0, index);
             }
-            commandRegistry.retrieveCommand(callbackData)
-                    .execute(update);
+
+            try {
+                commandRegistry.retrieveCommand(callbackData)
+                        .execute(update);
+            } catch (TokenNotFound e) {
+                bot.sendMessage(userId, "Доступ к боту запрещен " + e.getMessage(), null);
+                executeCommand("change_sandbox_token", update);
+            }
+        }
+    }
+
+    public void executeCommand(String commandName, Update update) {
+        // 1. Получаем команду по имени (например, "/login" или "/menu")
+        Command command = commandRegistry.retrieveCommand(commandName);
+        if (command != null) {
+            try {
+                command.execute(update);
+            } catch (Exception e) {
+                logger.error("Ошибка при редиректе на {}", commandName, e);
+            }
+        } else {
+            logger.error("Команда для редиректа не найдена: {}", commandName);
         }
     }
 }
