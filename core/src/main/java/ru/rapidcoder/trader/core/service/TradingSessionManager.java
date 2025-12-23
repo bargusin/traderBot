@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.rapidcoder.trader.core.database.entity.User;
 import ru.rapidcoder.trader.core.database.entity.UserSetting;
 import ru.rapidcoder.trader.core.database.repository.UserRepository;
+import ru.rapidcoder.trader.core.exception.TokenNotFound;
 import ru.tinkoff.piapi.core.InvestApi;
 
 import java.util.Map;
@@ -19,14 +20,11 @@ public class TradingSessionManager {
 
     private final EncryptionService encryptionService;
 
-    private final AccountService accountService;
-
     private final Map<Long, TradingUserSession> sessionCache = new ConcurrentHashMap<>();
 
     public TradingSessionManager(UserRepository userRepository, EncryptionService encryptionService) {
         this.userRepository = userRepository;
         this.encryptionService = encryptionService;
-        this.accountService = new AccountService(this);
     }
 
     public InvestApi getApi(Long chatId) {
@@ -51,7 +49,7 @@ public class TradingSessionManager {
     }
 
     public void switchMode(Long chatId, TradingMode newMode) {
-        logger.info("Переключение режима для пользователя {} на {}", chatId, newMode);
+        logger.info("Переключение режима торговли {} для пользователя {}", newMode, chatId);
         User user = userRepository.findByChatId(chatId)
                 .orElseThrow(() -> new IllegalStateException("Пользователь не найден"));
 
@@ -83,12 +81,9 @@ public class TradingSessionManager {
         User user = userRepository.findByChatId(chatId)
                 .orElseThrow(() -> new IllegalStateException("Пользователь не зарегистрирован"));
         TradingMode modeToRestore = user.getCurrentMode();
-        if (modeToRestore == null) {
-            modeToRestore = TradingMode.SANDBOX;
-        }
         Optional<UserSetting> settingOpt = user.getSettingByMode(modeToRestore == TradingMode.READONLY ? TradingMode.PRODUCTION : modeToRestore);
         if (settingOpt.isEmpty()) {
-            throw new IllegalStateException("Нет активного токена для режима " + modeToRestore);
+            throw new TokenNotFound("Нет активного токена для режима " + modeToRestore);
         }
         String token = encryptionService.decrypt(settingOpt.get()
                 .getEncryptedToken());
@@ -108,9 +103,5 @@ public class TradingSessionManager {
 
     public void removeSession(Long chatId) {
         sessionCache.remove(chatId);
-    }
-
-    public AccountService getAccountService() {
-        return accountService;
     }
 }

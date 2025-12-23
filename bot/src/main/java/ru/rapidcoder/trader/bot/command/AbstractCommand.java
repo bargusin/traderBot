@@ -12,8 +12,11 @@ public abstract class AbstractCommand implements Command {
     protected static final Logger logger = LoggerFactory.getLogger(AbstractCommand.class);
 
     protected final Bot bot;
+
     protected final UserStateService userStateService = UserStateService.getInstance();
+
     private final String identifier;
+
     private final String description;
 
     public AbstractCommand(Bot bot, String identifier, String description) {
