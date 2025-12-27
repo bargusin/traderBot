@@ -7,6 +7,8 @@ import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.*;
 import ru.rapidcoder.trader.bot.command.account.AccountCommand;
 import ru.rapidcoder.trader.bot.command.account.SwitchAccountCommand;
+import ru.rapidcoder.trader.bot.command.order.BuyMarketCommand;
+import ru.rapidcoder.trader.bot.command.order.SellMarketCommand;
 import ru.rapidcoder.trader.bot.command.settings.ChangeProductionTokenCommand;
 import ru.rapidcoder.trader.bot.command.settings.ChangeSandboxTokenCommand;
 import ru.rapidcoder.trader.bot.command.settings.SettingsCommand;
@@ -36,6 +38,9 @@ public class MessageHandler {
         commandRegistry.registry(new SwitchAccountCommand(bot, "switch_account", "Выбор счета"));
 
         commandRegistry.registry(new PortfolioCommand(bot, "/portfolio", "Портфель"));
+
+        commandRegistry.registry(new BuyMarketCommand(bot, "/buy_market", "Покупка"));
+        commandRegistry.registry(new SellMarketCommand(bot, "/sell_market", "Продажа"));
 
         commandRegistry.registry(new SettingsCommand(bot, "/settings", "Настройки"));
         commandRegistry.registry(new SwitchTradingModeCommand(bot, SettingsCommand.CallbackType.SWITCH_TRADING_MODE.getPrefix(), "Смена режима работы бота"));
@@ -68,8 +73,12 @@ public class MessageHandler {
             }
 
             try {
-                commandRegistry.retrieveCommand(update.getMessage()
-                                .getText())
+                int index = messageText.indexOf(' ');
+                if (index > 0) {
+                    messageText = messageText.substring(0, index);
+                }
+
+                commandRegistry.retrieveCommand(messageText)
                         .execute(update);
             } catch (TokenNotFound e) {
                 bot.sendMessage(userId, "Доступ к боту запрещен " + e.getMessage(), null);
@@ -104,7 +113,6 @@ public class MessageHandler {
     }
 
     public void executeCommand(String commandName, Update update) {
-        // 1. Получаем команду по имени (например, "/login" или "/menu")
         Command command = commandRegistry.retrieveCommand(commandName);
         if (command != null) {
             try {
