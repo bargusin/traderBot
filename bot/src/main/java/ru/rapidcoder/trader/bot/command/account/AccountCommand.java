@@ -30,7 +30,7 @@ public class AccountCommand extends AbstractCommand {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
-        bot.getApiCallExecutor().execute(getChatId(update), () -> getActiveAccounts(getChatId(update)).handle((accounts, ex) -> {
+        getActiveAccounts(getChatId(update)).handle((accounts, ex) -> {
             if (ex == null && accounts != null) {
                 for (Account account : accounts) {
                     rows.add(List.of(createAccountButton(account)));
@@ -42,7 +42,7 @@ public class AccountCommand extends AbstractCommand {
             String finalText = (ex == null) ? text : text + "\n\n\uD83D\uDEAB Не удалось получить список счетов: " + ex.getMessage();
             processMessage(update, finalText, keyboard);
             return null;
-        }));
+        });
     }
 
     public CompletableFuture<List<Account>> getActiveAccounts(Long chatId) {
