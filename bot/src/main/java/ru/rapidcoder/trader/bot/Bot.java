@@ -11,7 +11,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.rapidcoder.trader.bot.handler.MessageHandler;
-import ru.rapidcoder.trader.bot.service.ApiCallExecutor;
 import ru.rapidcoder.trader.core.database.DatabaseManager;
 import ru.rapidcoder.trader.core.database.repository.UserRepository;
 import ru.rapidcoder.trader.core.service.EncryptionService;
@@ -25,7 +24,6 @@ public class Bot extends TelegramLongPollingBot {
     private final DatabaseManager databaseManager;
     private final String encryptedKey;
     private final TradingSessionManager tradingSessionManager;
-    private final ApiCallExecutor apiCallExecutor;
 
     public Bot(SettingsBot settings) {
         super(settings.getTokenId());
@@ -36,7 +34,6 @@ public class Bot extends TelegramLongPollingBot {
 
         this.messageHandler = new MessageHandler(this);
         this.tradingSessionManager = new TradingSessionManager(new UserRepository(databaseManager), new EncryptionService(encryptedKey));
-        this.apiCallExecutor = new ApiCallExecutor(this, tradingSessionManager);
     }
 
     @Override
@@ -49,8 +46,7 @@ public class Bot extends TelegramLongPollingBot {
         try {
             if (update.hasMessage()) {
                 Message message = update.getMessage();
-                Long userId = message.getFrom()
-                        .getId();
+                Long userId = message.getFrom().getId();
                 long chatId = message.getChatId();
                 logger.debug("Обработка сообщения chatId={}, userId={}", chatId, userId);
                 if (message.hasText()) {
@@ -86,10 +82,6 @@ public class Bot extends TelegramLongPollingBot {
 
     public TradingSessionManager getTradingSessionManager() {
         return tradingSessionManager;
-    }
-
-    public ApiCallExecutor getApiCallExecutor() {
-        return apiCallExecutor;
     }
 
     public void sendMessage(Long chatId, String text, InlineKeyboardMarkup keyboard) {

@@ -27,8 +27,7 @@ public class PortfolioCommand extends AbstractCommand {
     public void execute(Update update) {
         Long chatId = getChatId(update);
 
-        String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                .getCurrentMode(chatId), "\uD83D\uDCBC <b>Управление портфелем</b>");
+        String text = InterfaceFactory.format(bot.getTradingSessionManager().getCurrentMode(chatId), "\uD83D\uDCBC <b>Управление портфелем</b>");
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();

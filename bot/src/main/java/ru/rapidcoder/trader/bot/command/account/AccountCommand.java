@@ -24,8 +24,10 @@ public class AccountCommand extends AbstractCommand {
 
     @Override
     public void execute(Update update) {
-        String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                .getCurrentMode(getChatId(update)), "\uD83D\uDCB0 <b>Выбор счета</b>");
+        String text = InterfaceFactory.format(
+                bot.getTradingSessionManager().getCurrentMode(getChatId(update)),
+                "\uD83D\uDCB0 <b>Выбор счета</b>"
+        );
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
@@ -46,28 +48,25 @@ public class AccountCommand extends AbstractCommand {
     }
 
     public CompletableFuture<List<Account>> getActiveAccounts(Long chatId) {
-        InvestApi api = bot.getTradingSessionManager()
-                .getApi(chatId);
-        TradingMode mode = bot.getTradingSessionManager()
-                .getCurrentMode(chatId);
+        InvestApi api = bot.getTradingSessionManager().getApi(chatId);
+        TradingMode mode = bot.getTradingSessionManager().getCurrentMode(chatId);
         if (mode == TradingMode.SANDBOX) {
             SandboxService sandboxService = api.getSandboxService();
-            return sandboxService.getAccounts()
-                    .thenCompose(accounts -> {
-                        if (!accounts.isEmpty()) {
-                            return CompletableFuture.completedFuture(accounts);
-                        }
-                        return sandboxService.openAccount()
-                                .thenCompose(newAccountId -> sandboxService.getAccounts());
-                    });
+            return sandboxService.getAccounts().thenCompose(accounts -> {
+                if (!accounts.isEmpty()) {
+                    return CompletableFuture.completedFuture(accounts);
+                }
+                return sandboxService.openAccount().thenCompose(newAccountId -> sandboxService.getAccounts());
+            });
         } else {
-            return api.getUserService()
-                    .getAccounts();
+            return api.getUserService().getAccounts();
         }
     }
 
     private KeyboardButton createAccountButton(Account account) {
-        return InterfaceFactory.createButton((account.getName()
-                .isEmpty() ? "Брокерский счет" : account.getName()) + " (ID: " + account.getId() + ")", "switch_account#" + account.getId());
+        return InterfaceFactory.createButton(
+                (account.getName().isEmpty() ? "Брокерский счет" : account.getName()) + " (ID: " + account.getId() + ")",
+                "switch_account#" + account.getId()
+        );
     }
 }

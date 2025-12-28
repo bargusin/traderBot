@@ -49,11 +49,8 @@ public class MessageHandler {
     }
 
     public void handleCommand(Update update) {
-        String messageText = update.getMessage()
-                .getText();
-        Long userId = update.getMessage()
-                .getFrom()
-                .getId();
+        String messageText = update.getMessage().getText();
+        Long userId = update.getMessage().getFrom().getId();
 
         if (bot.hasAccess(userId)) {
             bot.sendMessage(userId, "Доступ к боту запрещен", null);
@@ -78,8 +75,7 @@ public class MessageHandler {
                     messageText = messageText.substring(0, index);
                 }
 
-                commandRegistry.retrieveCommand(messageText)
-                        .execute(update);
+                commandRegistry.retrieveCommand(messageText).execute(update);
             } catch (TokenNotFound e) {
                 bot.sendMessage(userId, "Доступ к боту запрещен " + e.getMessage(), null);
                 executeCommand("change_sandbox_token", update);
@@ -88,11 +84,8 @@ public class MessageHandler {
     }
 
     public void handleCallback(Update update) {
-        String callbackData = update.getCallbackQuery()
-                .getData();
-        Long userId = update.getCallbackQuery()
-                .getFrom()
-                .getId();
+        String callbackData = update.getCallbackQuery().getData();
+        Long userId = update.getCallbackQuery().getFrom().getId();
 
         if (bot.hasAccess(userId)) {
             bot.sendMessage(userId, "Доступ к боту запрещен", null);
@@ -103,8 +96,7 @@ public class MessageHandler {
             }
 
             try {
-                commandRegistry.retrieveCommand(callbackData)
-                        .execute(update);
+                commandRegistry.retrieveCommand(callbackData).execute(update);
             } catch (TokenNotFound e) {
                 bot.sendMessage(userId, "Доступ к боту запрещен " + e.getMessage(), null);
                 executeCommand("change_sandbox_token", update);
