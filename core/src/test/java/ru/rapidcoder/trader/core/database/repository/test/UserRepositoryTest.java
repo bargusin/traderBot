@@ -28,10 +28,8 @@ public class UserRepositoryTest {
     void setUpAll() throws NoSuchAlgorithmException {
         KeyGenerator keyGen = KeyGenerator.getInstance("AES");
         keyGen.init(256);
-        byte[] key = keyGen.generateKey()
-                .getEncoded();
-        String validKeyBase64 = Base64.getEncoder()
-                .encodeToString(key);
+        byte[] key = keyGen.generateKey().getEncoded();
+        String validKeyBase64 = Base64.getEncoder().encodeToString(key);
         encryptionService = new EncryptionService(validKeyBase64);
     }
 
@@ -72,13 +70,11 @@ public class UserRepositoryTest {
 
         Optional<UserSetting> sandboxSetting = foundUser.getSettingByMode(TradingMode.SANDBOX);
         assertTrue(sandboxSetting.isPresent());
-        assertEquals("sandbox_token_value", sandboxSetting.get()
-                .getEncryptedToken());
+        assertEquals("sandbox_token_value", sandboxSetting.get().getEncryptedToken());
 
         Optional<UserSetting> productionSetting = foundUser.getSettingByMode(TradingMode.PRODUCTION);
         assertTrue(productionSetting.isPresent());
-        assertEquals("prod_token_value", productionSetting.get()
-                .getEncryptedToken());
+        assertEquals("prod_token_value", productionSetting.get().getEncryptedToken());
 
         userRepository.updateToken(100L, TradingMode.SANDBOX, "sandbox_token_value");
         Optional<User> refreshedOpt = userRepository.findByChatId(100L);
@@ -86,8 +82,7 @@ public class UserRepositoryTest {
         User refreshedUser = refreshedOpt.get();
         sandboxSetting = refreshedUser.getSettingByMode(TradingMode.SANDBOX);
         assertTrue(sandboxSetting.isPresent());
-        assertEquals("sandbox_token_value", sandboxSetting.get()
-                .getEncryptedToken());
+        assertEquals("sandbox_token_value", sandboxSetting.get().getEncryptedToken());
     }
 
     @Test
@@ -117,8 +112,7 @@ public class UserRepositoryTest {
         User refreshedUser = refreshedOpt.get();
         sandboxSetting = refreshedUser.getSettingByMode(TradingMode.SANDBOX);
         assertTrue(sandboxSetting.isPresent());
-        assertEquals("sandbox_token_value", encryptionService.decrypt(sandboxSetting.get()
-                .getEncryptedToken()));
+        assertEquals("sandbox_token_value", encryptionService.decrypt(sandboxSetting.get().getEncryptedToken()));
 
         productionSetting = refreshedUser.getSettingByMode(TradingMode.PRODUCTION);
         assertFalse(productionSetting.isPresent());
@@ -160,7 +154,7 @@ public class UserRepositoryTest {
         assertEquals(savedUser.getUserName(), foundUser.getUserName());
         assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
         assertNotEquals(savedUser.getCurrentMode(), foundUser.getCurrentMode());
-        assertEquals(foundUser.getCurrentMode(), TradingMode.PRODUCTION);
+        assertEquals(TradingMode.PRODUCTION, foundUser.getCurrentMode());
     }
 
     @Test
@@ -184,8 +178,8 @@ public class UserRepositoryTest {
         assertEquals(savedUser.getChatId(), foundUser.getChatId());
         assertEquals(savedUser.getUserName(), foundUser.getUserName());
         assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
-        assertEquals(foundUser.getCurrentAccountId(), "1");
-        assertEquals(foundUser.getCurrentMode(), TradingMode.SANDBOX);
+        assertEquals("1", foundUser.getCurrentAccountId());
+        assertEquals(TradingMode.SANDBOX, foundUser.getCurrentMode());
     }
 
     @Test
@@ -211,6 +205,6 @@ public class UserRepositoryTest {
         assertEquals(savedUser.getUserName(), foundUser.getUserName());
         assertEquals(savedUser.getCreatedAt(), foundUser.getCreatedAt());
         assertNull(foundUser.getCurrentAccountId());
-        assertEquals(foundUser.getCurrentMode(), TradingMode.PRODUCTION);
+        assertEquals(TradingMode.PRODUCTION, foundUser.getCurrentMode());
     }
 }

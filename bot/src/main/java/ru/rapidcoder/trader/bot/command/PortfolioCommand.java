@@ -35,10 +35,8 @@ public class PortfolioCommand extends AbstractCommand {
         rows.add(List.of(InterfaceFactory.createButton("\uD83C\uDFE0 Главное меню", "back_to_main")));
         keyboard.setKeyboard(rows);
 
-        InvestApi investApi = bot.getTradingSessionManager()
-                .getApi(chatId);
-        String accountId = bot.getTradingSessionManager()
-                .getCurrentAccountId(chatId);
+        InvestApi investApi = bot.getTradingSessionManager().getApi(chatId);
+        String accountId = bot.getTradingSessionManager().getCurrentAccountId(chatId);
 
         if (StringUtils.isEmpty(accountId)) {
             processMessage(update, text + "\n\n\uD83D\uDEAB Счет не определен /account", keyboard);
@@ -97,11 +95,7 @@ public class PortfolioCommand extends AbstractCommand {
                 .handle((instrument, ex) -> {
                     String name = (ex == null && instrument != null) ? instrument.getName() : "Неизвестный";
                     String ticker = (ex == null && instrument != null) ? instrument.getTicker() : pos.getFigi();
-
-                    // В Core моделях getQuantity() сразу возвращает BigDecimal!
                     BigDecimal quantity = pos.getQuantity();
-
-                    // Цены тоже приходят в удобном классе Money
                     String price = formatMoney(pos.getCurrentPrice());
                     String yield = formatYield(pos.getExpectedYield(), pos.getCurrentPrice()
                             .getCurrency());
@@ -110,26 +104,26 @@ public class PortfolioCommand extends AbstractCommand {
                 });
     }
 
-    // --- Упрощенный форматтер для Core моделей ---
-
     private String formatMoney(Money money) {
-        if (money == null)
+        if (money == null) {
             return "0.00";
-        // Money.getValue() возвращает BigDecimal, currency - String
+        }
         return String.format("%.2f %s", money.getValue(), formatCurrency(money.getCurrency()));
     }
 
     private String formatYield(BigDecimal value, String currencyCode) {
-        if (value == null)
+        if (value == null) {
             return "0.00";
+        }
         // Добавляем знак "+" для положительных чисел
         String sign = value.compareTo(BigDecimal.ZERO) > 0 ? "+" : "";
         return String.format("%s%.2f %s", sign, value, formatCurrency(currencyCode));
     }
 
     private String formatCurrency(String currencyCode) {
-        if (currencyCode == null)
+        if (currencyCode == null) {
             return "";
+        }
         switch (currencyCode.toUpperCase()) {
             case "RUB":
                 return "₽";

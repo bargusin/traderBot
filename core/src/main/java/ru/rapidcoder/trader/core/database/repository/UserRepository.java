@@ -56,8 +56,7 @@ public class UserRepository {
                                 .equals(mode))
                         .findFirst();
                 if (existingSetting.isPresent()) {
-                    existingSetting.get()
-                            .setEncryptedToken(newToken);
+                    existingSetting.get().setEncryptedToken(newToken);
                     logger.info("Обновлен токен для пользователя {} в режиме {}", chatId, mode);
                 } else {
                     user.addSetting(mode, newToken);
