@@ -30,6 +30,7 @@ allprojects {
         implementation ("com.zaxxer:HikariCP:7.1.0")
         implementation ("org.hibernate.orm:hibernate-core:7.1.33.Final")
         implementation ("org.hibernate.orm:hibernate-community-dialects:7.1.33.Final")
+        implementation ("javax.xml.bind:jaxb-api:2.3.1")
 
         testImplementation("junit:junit:4.13.2")
         testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")

@@ -9,6 +9,7 @@ public final class BotConstants {
     public static final String CALLBACK_SETTINGS = "/settings";
     public static final String CALLBACK_CHANGE_SANDBOX_TOKEN = "change_sandbox_token";
     public static final String CALLBACK_CHANGE_PRODUCTION_TOKEN = "change_production_token";
+    public static final String CALLBACK_CHART_PERIOD = "chart_period";
 
     public static final String BUTTON_BACK_TO_MAIN = "\uD83C\uDFE0 Главное меню";
     public static final String BUTTON_SETTINGS = "⚙\uFE0F Настройки";

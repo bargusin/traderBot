@@ -20,7 +20,18 @@ public class CommandRegistry {
     }
 
     public Command retrieveCommand(String commandIdentifier) {
-        return commandMap.getOrDefault(commandIdentifier, unknownCommand);
+        Command cmd = commandMap.get(commandIdentifier);
+        if (cmd != null) {
+            return cmd;
+        }
+        int spaceIndex = commandIdentifier.indexOf(' ');
+        if (spaceIndex > 0) {
+            cmd = commandMap.get(commandIdentifier.substring(0, spaceIndex));
+            if (cmd != null) {
+                return cmd;
+            }
+        }
+        return unknownCommand;
     }
 
 }

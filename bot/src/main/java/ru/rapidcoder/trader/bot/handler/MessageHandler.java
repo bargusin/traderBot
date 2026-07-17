@@ -41,6 +41,10 @@ public class MessageHandler {
         commandRegistry.registry(new SwitchTradingModeCommand(bot, SettingsCommand.CallbackType.SWITCH_TRADING_MODE.getPrefix(), "Смена режима работы бота"));
         commandRegistry.registry(new ChangeSandboxTokenCommand(bot, BotConstants.CALLBACK_CHANGE_SANDBOX_TOKEN, "Установка SANDBOX токена"));
         commandRegistry.registry(new ChangeProductionTokenCommand(bot, BotConstants.CALLBACK_CHANGE_PRODUCTION_TOKEN, "Установка PRODUCTION токена"));
+
+        commandRegistry.registry(new PriceCommand(bot, "/price", "Текущая цена инструмента"));
+        commandRegistry.registry(new ChartCommand(bot, "/chart", "Свечной график"));
+        commandRegistry.registry(new ChartCommand(bot, BotConstants.CALLBACK_CHART_PERIOD, "Смена периода графика"));
     }
 
     public void handleCommand(Update update) {
