@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.AbstractCommand;
+import ru.rapidcoder.trader.bot.command.BotConstants;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.component.KeyboardButton;
 import ru.rapidcoder.trader.core.service.TradingMode;
@@ -20,16 +21,15 @@ public class SettingsCommand extends AbstractCommand {
 
     @Override
     public void execute(Update update) {
-        String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                .getCurrentMode(getChatId(update)), "⚙\uFE0F <b>Настройки</b>");
+        String text = buildHeaderText(update, "⚙\uFE0F <b>Настройки</b>");
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
         rows.add(List.of(createTradingModeButton(TradingMode.SANDBOX), createTradingModeButton(TradingMode.READONLY), createTradingModeButton(TradingMode.PRODUCTION)));
-        rows.add(List.of(InterfaceFactory.createButton("✏\uFE0F SANDBOX_TOKEN", "change_sandbox_token"), InterfaceFactory.createButton("✏\uFE0F PRODUCTION_TOKEN", "change_production_token")));
+        rows.add(List.of(InterfaceFactory.createButton("✏\uFE0F SANDBOX_TOKEN", BotConstants.CALLBACK_CHANGE_SANDBOX_TOKEN), InterfaceFactory.createButton("✏\uFE0F PRODUCTION_TOKEN", BotConstants.CALLBACK_CHANGE_PRODUCTION_TOKEN)));
         rows.add(List.of(InterfaceFactory.createButton("\uD83D\uDCB0 Счета", "/account")));
-        rows.add(List.of(InterfaceFactory.createButton("\uD83C\uDFE0 Главное меню", "back_to_main")));
+        rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_BACK_TO_MAIN, BotConstants.CALLBACK_BACK_TO_MAIN)));
         keyboard.setKeyboard(rows);
 
         processMessage(update, text, keyboard);

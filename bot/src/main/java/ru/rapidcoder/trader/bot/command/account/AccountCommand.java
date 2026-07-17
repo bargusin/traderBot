@@ -5,6 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.AbstractCommand;
+import ru.rapidcoder.trader.bot.command.BotConstants;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.component.KeyboardButton;
 import ru.rapidcoder.trader.core.service.TradingMode;
@@ -24,8 +25,7 @@ public class AccountCommand extends AbstractCommand {
 
     @Override
     public void execute(Update update) {
-        String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                .getCurrentMode(getChatId(update)), "\uD83D\uDCB0 <b>Выбор счета</b>");
+        String text = buildHeaderText(update, "\uD83D\uDCB0 <b>Выбор счета</b>");
 
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
@@ -36,7 +36,7 @@ public class AccountCommand extends AbstractCommand {
                     rows.add(List.of(createAccountButton(account)));
                 }
             }
-            rows.add(List.of(InterfaceFactory.createButton("\uD83C\uDFE0 Главное меню", "back_to_main")));
+            rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_BACK_TO_MAIN, BotConstants.CALLBACK_BACK_TO_MAIN)));
             keyboard.setKeyboard(rows);
 
             String finalText = (ex == null) ? text : text + "\n\n\uD83D\uDEAB Не удалось получить список счетов: " + ex.getMessage();

@@ -2,14 +2,9 @@ package ru.rapidcoder.trader.bot.command.settings;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.AbstractCommand;
-import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.core.service.TradingMode;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SwitchTradingModeCommand extends AbstractCommand {
 
@@ -22,18 +17,13 @@ public class SwitchTradingModeCommand extends AbstractCommand {
         TradingMode mode = TradingMode.valueOf(getSuffix(update.getCallbackQuery()
                 .getData()));
 
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-
-        rows.add(List.of(InterfaceFactory.createButton("⚙\uFE0F Настройки", "/settings")));
-        keyboard.setKeyboard(rows);
+        InlineKeyboardMarkup keyboard = settingsKeyboard();
 
         try {
             bot.getTradingSessionManager()
                     .switchMode(getChatId(update), mode);
 
-            String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                    .getCurrentMode(getChatId(update)), "\uD83C\uDFE0 <b>Смена режима работы бота</b>");
+            String text = buildHeaderText(update, "\uD83C\uDFE0 <b>Смена режима работы бота</b>");
 
             text += "\n\nРежим работы бота успешно изменен на <b>" + mode + "</b>\n";
 

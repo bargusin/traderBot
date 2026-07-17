@@ -3,16 +3,13 @@ package ru.rapidcoder.trader.bot.command;
 import org.apache.commons.lang3.StringUtils;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import ru.rapidcoder.trader.bot.Bot;
-import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.tinkoff.piapi.core.InvestApi;
 import ru.tinkoff.piapi.core.models.Money;
 import ru.tinkoff.piapi.core.models.Portfolio;
 import ru.tinkoff.piapi.core.models.Position;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -27,14 +24,9 @@ public class PortfolioCommand extends AbstractCommand {
     public void execute(Update update) {
         Long chatId = getChatId(update);
 
-        String text = InterfaceFactory.format(bot.getTradingSessionManager()
-                .getCurrentMode(chatId), "\uD83D\uDCBC <b>Управление портфелем</b>");
+        String text = buildHeaderText(update, "\uD83D\uDCBC <b>Управление портфелем</b>");
 
-        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
-        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
-
-        rows.add(List.of(InterfaceFactory.createButton("\uD83C\uDFE0 Главное меню", "back_to_main")));
-        keyboard.setKeyboard(rows);
+        InlineKeyboardMarkup keyboard = backToMainKeyboard();
 
         InvestApi investApi = bot.getTradingSessionManager()
                 .getApi(chatId);

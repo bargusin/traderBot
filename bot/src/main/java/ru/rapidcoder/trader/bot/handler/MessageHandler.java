@@ -29,7 +29,7 @@ public class MessageHandler {
         this.commandRegistry = new CommandRegistry(bot);
 
         commandRegistry.registry(new StartCommand(bot, "/start", "Старт"));
-        commandRegistry.registry(new StartCommand(bot, "back_to_main", "Возврат в основное меню"));
+        commandRegistry.registry(new StartCommand(bot, BotConstants.CALLBACK_BACK_TO_MAIN, "Возврат в основное меню"));
         commandRegistry.registry(new HelpCommand(bot, "/help", "Помощь"));
 
         commandRegistry.registry(new AccountCommand(bot, "/account", "Управление счетами"));
@@ -39,8 +39,8 @@ public class MessageHandler {
 
         commandRegistry.registry(new SettingsCommand(bot, "/settings", "Настройки"));
         commandRegistry.registry(new SwitchTradingModeCommand(bot, SettingsCommand.CallbackType.SWITCH_TRADING_MODE.getPrefix(), "Смена режима работы бота"));
-        commandRegistry.registry(new ChangeSandboxTokenCommand(bot, "change_sandbox_token", "Установка SANDBOX токена"));
-        commandRegistry.registry(new ChangeProductionTokenCommand(bot, "change_production_token", "Установка PRODUCTION токена"));
+        commandRegistry.registry(new ChangeSandboxTokenCommand(bot, BotConstants.CALLBACK_CHANGE_SANDBOX_TOKEN, "Установка SANDBOX токена"));
+        commandRegistry.registry(new ChangeProductionTokenCommand(bot, BotConstants.CALLBACK_CHANGE_PRODUCTION_TOKEN, "Установка PRODUCTION токена"));
     }
 
     public void handleCommand(Update update) {
@@ -73,7 +73,7 @@ public class MessageHandler {
                         .execute(update);
             } catch (TokenNotFound e) {
                 bot.sendMessage(userId, "Доступ к боту запрещен " + e.getMessage(), null);
-                executeCommand("change_sandbox_token", update);
+                executeCommand(BotConstants.CALLBACK_CHANGE_SANDBOX_TOKEN, update);
             }
         }
     }
@@ -98,7 +98,7 @@ public class MessageHandler {
                         .execute(update);
             } catch (TokenNotFound e) {
                 bot.sendMessage(userId, "Доступ к боту запрещен " + e.getMessage(), null);
-                executeCommand("change_sandbox_token", update);
+                executeCommand(BotConstants.CALLBACK_CHANGE_SANDBOX_TOKEN, update);
             }
         }
     }

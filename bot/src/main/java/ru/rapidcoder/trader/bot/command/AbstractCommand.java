@@ -5,7 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.rapidcoder.trader.bot.Bot;
+import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.service.UserStateService;
+import ru.rapidcoder.trader.core.service.TradingMode;
+
+import java.util.List;
 
 public abstract class AbstractCommand implements Command {
 
@@ -101,5 +105,23 @@ public abstract class AbstractCommand implements Command {
         } else {
             bot.sendMessage(getChatId(update), text, keyboard);
         }
+    }
+
+    protected String buildHeaderText(Update update, String title) {
+        TradingMode currentMode = bot.getTradingSessionManager()
+                .getCurrentMode(getChatId(update));
+        return InterfaceFactory.format(currentMode, title);
+    }
+
+    protected InlineKeyboardMarkup backToMainKeyboard() {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        keyboard.setKeyboard(List.of(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_BACK_TO_MAIN, BotConstants.CALLBACK_BACK_TO_MAIN))));
+        return keyboard;
+    }
+
+    protected InlineKeyboardMarkup settingsKeyboard() {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        keyboard.setKeyboard(List.of(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_SETTINGS, BotConstants.CALLBACK_SETTINGS))));
+        return keyboard;
     }
 }
