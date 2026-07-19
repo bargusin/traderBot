@@ -45,6 +45,7 @@ public class PortfolioCommand extends AbstractCommand {
                         processMessage(update, text + reportText, keyboard);
                     })
                     .exceptionally(e -> {
+                        logger.error("Ошибка PortfolioCommand для chatId={}: {}", getChatId(update), e.getMessage(), e);
                         processMessage(update, text + "\n\n\uD83D\uDEAB Ошибка при получении портфеля: " + e.getMessage(), keyboard);
                         return null;
                     });
@@ -88,6 +89,9 @@ public class PortfolioCommand extends AbstractCommand {
         return api.getInstrumentsService()
                 .getInstrumentByFigi(pos.getFigi())
                 .handle((instrument, ex) -> {
+                    if (ex != null) {
+                        logger.warn("Не удалось получить инструмент по figi={}: {}", pos.getFigi(), ex.getMessage());
+                    }
                     String name = (ex == null && instrument != null) ? instrument.getName() : "Неизвестный";
                     String ticker = (ex == null && instrument != null) ? instrument.getTicker() : pos.getFigi();
 

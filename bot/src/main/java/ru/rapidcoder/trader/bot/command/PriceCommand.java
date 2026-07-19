@@ -56,6 +56,7 @@ public class PriceCommand extends AbstractCommand {
                             });
                 })
                 .exceptionally(ex -> {
+                    logger.error("Ошибка PriceCommand для chatId={}: {}", getChatId(update), ex.getMessage(), ex);
                     processMessage(update, "\uD83D\uDEAB Ошибка: " + ex.getMessage(), backToMainKeyboard());
                     return null;
                 });

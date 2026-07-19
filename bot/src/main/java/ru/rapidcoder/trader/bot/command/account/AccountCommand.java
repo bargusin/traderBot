@@ -39,6 +39,9 @@ public class AccountCommand extends AbstractCommand {
             rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_BACK_TO_MAIN, BotConstants.CALLBACK_BACK_TO_MAIN)));
             keyboard.setKeyboard(rows);
 
+            if (ex != null) {
+                logger.error("Ошибка получения счетов для chatId={}: {}", getChatId(update), ex.getMessage(), ex);
+            }
             String finalText = (ex == null) ? text : text + "\n\n\uD83D\uDEAB Не удалось получить список счетов: " + ex.getMessage();
             processMessage(update, finalText, keyboard);
             return null;

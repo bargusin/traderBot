@@ -112,10 +112,13 @@ public class MarketDataService {
 
     public CompletableFuture<Optional<InstrumentShort>> findInstrumentByTicker(String ticker) {
         try {
+            String query = ticker.trim();
             return api.getInstrumentsService()
-                    .findInstrument(ticker)
+                    .findInstrument(query)
                     .thenApply(instruments -> instruments.stream()
-                            .filter(i -> ticker.equalsIgnoreCase(i.getTicker()))
+                            .filter(i -> query.equalsIgnoreCase(i.getTicker())
+                                    || query.equalsIgnoreCase(i.getFigi())
+                                    || query.equalsIgnoreCase(i.getIsin()))
                             .findFirst());
         } catch (ApiRuntimeException e) {
             logger.error("Ошибка поиска инструмента {}: {}", ticker, e.getMessage());

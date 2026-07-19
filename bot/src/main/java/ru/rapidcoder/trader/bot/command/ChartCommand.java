@@ -76,6 +76,7 @@ public class ChartCommand extends AbstractCommand {
                             });
                 })
                 .exceptionally(ex -> {
+                    logger.error("Ошибка ChartCommand для chatId={}: {}", getChatId(update), ex.getMessage(), ex);
                     processMessage(update, "\uD83D\uDEAB Ошибка: " + ex.getMessage(), backToMainKeyboard());
                     return null;
                 });
@@ -117,6 +118,7 @@ public class ChartCommand extends AbstractCommand {
                             });
                 })
                 .exceptionally(ex -> {
+                    logger.error("Ошибка ChartCommand для chatId={}: {}", getChatId(update), ex.getMessage(), ex);
                     processMessage(update, "\uD83D\uDEAB Ошибка: " + ex.getMessage(), backToMainKeyboard());
                     return null;
                 });
