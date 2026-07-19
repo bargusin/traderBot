@@ -28,7 +28,7 @@ public class PriceCommand extends AbstractCommand {
     public void execute(Update update) {
         String messageText = update.getMessage()
                 .getText();
-        String ticker = messageText.replace("/price", "")
+        String ticker = messageText.replace(BotConstants.CMD_PRICE, "")
                 .trim();
 
         if (ticker.isEmpty()) {

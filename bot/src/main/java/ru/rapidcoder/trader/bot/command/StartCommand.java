@@ -38,8 +38,8 @@ public class StartCommand extends AbstractCommand {
         InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
-        rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_PORTFOLIO, "/portfolio")));
-        rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_SETTINGS, BotConstants.CALLBACK_SETTINGS), InterfaceFactory.createButton(BotConstants.BUTTON_HELP, "/help")));
+        rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_PORTFOLIO, BotConstants.CMD_PORTFOLIO)));
+        rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_SETTINGS, BotConstants.CALLBACK_SETTINGS), InterfaceFactory.createButton(BotConstants.BUTTON_HELP, BotConstants.CMD_HELP)));
         keyboard.setKeyboard(rows);
 
         processMessage(update, text, keyboard);

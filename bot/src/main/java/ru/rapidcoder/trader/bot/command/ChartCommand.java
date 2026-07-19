@@ -43,7 +43,7 @@ public class ChartCommand extends AbstractCommand {
     private void handleMessage(Update update) {
         String messageText = update.getMessage()
                 .getText();
-        String ticker = messageText.replace("/chart", "")
+        String ticker = messageText.replace(BotConstants.CMD_CHART, "")
                 .trim();
 
         if (ticker.isEmpty()) {

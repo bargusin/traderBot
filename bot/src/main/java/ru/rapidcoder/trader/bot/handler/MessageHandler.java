@@ -28,22 +28,22 @@ public class MessageHandler {
         this.bot = bot;
         this.commandRegistry = new CommandRegistry(bot);
 
-        commandRegistry.registry(new StartCommand(bot, "/start", "Старт"));
+        commandRegistry.registry(new StartCommand(bot, BotConstants.CMD_START, "Старт"));
         commandRegistry.registry(new StartCommand(bot, BotConstants.CALLBACK_BACK_TO_MAIN, "Возврат в основное меню"));
-        commandRegistry.registry(new HelpCommand(bot, "/help", "Помощь"));
+        commandRegistry.registry(new HelpCommand(bot, BotConstants.CMD_HELP, "Помощь"));
 
-        commandRegistry.registry(new AccountCommand(bot, "/account", "Управление счетами"));
+        commandRegistry.registry(new AccountCommand(bot, BotConstants.CMD_ACCOUNT, "Управление счетами"));
         commandRegistry.registry(new SwitchAccountCommand(bot, "switch_account", "Выбор счета"));
 
-        commandRegistry.registry(new PortfolioCommand(bot, "/portfolio", "Портфель"));
+        commandRegistry.registry(new PortfolioCommand(bot, BotConstants.CMD_PORTFOLIO, "Портфель"));
 
-        commandRegistry.registry(new SettingsCommand(bot, "/settings", "Настройки"));
+        commandRegistry.registry(new SettingsCommand(bot, BotConstants.CMD_SETTINGS, "Настройки"));
         commandRegistry.registry(new SwitchTradingModeCommand(bot, SettingsCommand.CallbackType.SWITCH_TRADING_MODE.getPrefix(), "Смена режима работы бота"));
         commandRegistry.registry(new ChangeSandboxTokenCommand(bot, BotConstants.CALLBACK_CHANGE_SANDBOX_TOKEN, "Установка SANDBOX токена"));
         commandRegistry.registry(new ChangeProductionTokenCommand(bot, BotConstants.CALLBACK_CHANGE_PRODUCTION_TOKEN, "Установка PRODUCTION токена"));
 
-        commandRegistry.registry(new PriceCommand(bot, "/price", "Текущая цена инструмента"));
-        commandRegistry.registry(new ChartCommand(bot, "/chart", "Свечной график"));
+        commandRegistry.registry(new PriceCommand(bot, BotConstants.CMD_PRICE, "Текущая цена инструмента"));
+        commandRegistry.registry(new ChartCommand(bot, BotConstants.CMD_CHART, "Свечной график"));
         commandRegistry.registry(new ChartCommand(bot, BotConstants.CALLBACK_CHART_PERIOD, "Смена периода графика"));
     }
 
@@ -57,7 +57,7 @@ public class MessageHandler {
         if (bot.hasAccess(userId)) {
             bot.sendMessage(userId, "Доступ к боту запрещен", null);
         } else {
-            if ("/cancel".equals(messageText)) {
+            if (BotConstants.CMD_CANCEL.equals(messageText)) {
                 userStateService.clearState(userId);
                 return;
             }

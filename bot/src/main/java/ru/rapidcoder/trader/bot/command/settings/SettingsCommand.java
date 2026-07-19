@@ -28,7 +28,7 @@ public class SettingsCommand extends AbstractCommand {
 
         rows.add(List.of(createTradingModeButton(TradingMode.SANDBOX), createTradingModeButton(TradingMode.READONLY), createTradingModeButton(TradingMode.PRODUCTION)));
         rows.add(List.of(InterfaceFactory.createButton("✏\uFE0F SANDBOX_TOKEN", BotConstants.CALLBACK_CHANGE_SANDBOX_TOKEN), InterfaceFactory.createButton("✏\uFE0F PRODUCTION_TOKEN", BotConstants.CALLBACK_CHANGE_PRODUCTION_TOKEN)));
-        rows.add(List.of(InterfaceFactory.createButton("\uD83D\uDCB0 Счета", "/account")));
+        rows.add(List.of(InterfaceFactory.createButton("\uD83D\uDCB0 Счета", BotConstants.CMD_ACCOUNT)));
         rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_BACK_TO_MAIN, BotConstants.CALLBACK_BACK_TO_MAIN)));
         keyboard.setKeyboard(rows);
 
