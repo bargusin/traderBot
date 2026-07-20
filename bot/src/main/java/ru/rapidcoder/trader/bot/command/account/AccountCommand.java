@@ -71,6 +71,6 @@ public class AccountCommand extends AbstractCommand {
 
     private KeyboardButton createAccountButton(Account account) {
         return InterfaceFactory.createButton((account.getName()
-                .isEmpty() ? "Брокерский счет" : account.getName()) + " (ID: " + account.getId() + ")", "switch_account#" + account.getId());
+                .isEmpty() ? "Брокерский счет" : account.getName()) + " (ID: " + account.getId() + ")", BotConstants.CALLBACK_SWITCH_ACCOUNT + "#" + account.getId());
     }
 }

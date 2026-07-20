@@ -14,6 +14,7 @@ public final class BotConstants {
     public static final String CMD_PRICE = "/price";
     public static final String CMD_CHART = "/chart";
 
+    public static final String CALLBACK_SWITCH_ACCOUNT = "switch_account";
     public static final String CALLBACK_BACK_TO_MAIN = "back_to_main";
     public static final String CALLBACK_SETTINGS = CMD_SETTINGS;
     public static final String CALLBACK_CHANGE_SANDBOX_TOKEN = "change_sandbox_token";

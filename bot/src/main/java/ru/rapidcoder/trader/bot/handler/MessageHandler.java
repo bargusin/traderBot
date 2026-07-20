@@ -3,8 +3,10 @@ package ru.rapidcoder.trader.bot.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import ru.rapidcoder.trader.bot.Bot;
 import ru.rapidcoder.trader.bot.command.*;
+import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.command.account.AccountCommand;
 import ru.rapidcoder.trader.bot.command.account.SwitchAccountCommand;
 import ru.rapidcoder.trader.bot.command.settings.ChangeProductionTokenCommand;
@@ -13,6 +15,10 @@ import ru.rapidcoder.trader.bot.command.settings.SettingsCommand;
 import ru.rapidcoder.trader.bot.command.settings.SwitchTradingModeCommand;
 import ru.rapidcoder.trader.bot.service.UserStateService;
 import ru.rapidcoder.trader.core.exception.TokenNotFound;
+
+import java.util.List;
+
+import java.util.List;
 
 public class MessageHandler {
 
@@ -33,7 +39,7 @@ public class MessageHandler {
         commandRegistry.registry(new HelpCommand(bot, BotConstants.CMD_HELP, "Помощь"));
 
         commandRegistry.registry(new AccountCommand(bot, BotConstants.CMD_ACCOUNT, "Управление счетами"));
-        commandRegistry.registry(new SwitchAccountCommand(bot, "switch_account", "Выбор счета"));
+        commandRegistry.registry(new SwitchAccountCommand(bot, BotConstants.CALLBACK_SWITCH_ACCOUNT, "Выбор счета"));
 
         commandRegistry.registry(new PortfolioCommand(bot, BotConstants.CMD_PORTFOLIO, "Портфель"));
 
@@ -58,7 +64,13 @@ public class MessageHandler {
             bot.sendMessage(userId, "Доступ к боту запрещен", null);
         } else {
             if (BotConstants.CMD_CANCEL.equals(messageText)) {
+                boolean hadHandler = userStateService.getInputHandler(userId) != null;
                 userStateService.clearState(userId);
+                if (hadHandler) {
+                    InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+                    keyboard.setKeyboard(List.of(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_SETTINGS, BotConstants.CALLBACK_SETTINGS))));
+                    bot.sendMessage(userId, "Действие отменено", keyboard);
+                }
                 return;
             }
 
@@ -92,6 +104,17 @@ public class MessageHandler {
         if (bot.hasAccess(userId)) {
             bot.sendMessage(userId, "Доступ к боту запрещен", null);
         } else {
+            if (BotConstants.CMD_CANCEL.equals(callbackData)) {
+                boolean hadHandler = userStateService.getInputHandler(userId) != null;
+                userStateService.clearState(userId);
+                if (hadHandler) {
+                    InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+                    keyboard.setKeyboard(List.of(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_SETTINGS, BotConstants.CALLBACK_SETTINGS))));
+                    bot.sendMessage(userId, "Действие отменено", keyboard);
+                }
+                return;
+            }
+
             int index = callbackData.indexOf('#');
             if (index > 0) {
                 callbackData = callbackData.substring(0, index);

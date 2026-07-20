@@ -124,4 +124,10 @@ public abstract class AbstractCommand implements Command {
         keyboard.setKeyboard(List.of(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_SETTINGS, BotConstants.CALLBACK_SETTINGS))));
         return keyboard;
     }
+
+    protected InlineKeyboardMarkup cancelKeyboard() {
+        InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
+        keyboard.setKeyboard(List.of(List.of(InterfaceFactory.createButton("❌ Отмена", BotConstants.CMD_CANCEL))));
+        return keyboard;
+    }
 }

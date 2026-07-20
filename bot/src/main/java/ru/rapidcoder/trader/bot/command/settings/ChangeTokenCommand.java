@@ -30,7 +30,7 @@ public abstract class ChangeTokenCommand extends AbstractCommand {
     public void execute(Update update) {
         Long chatId = getChatId(update);
 
-        processMessage(update, "Введите новый " + modeName + " токен:", null);
+        processMessage(update, "Введите новый " + modeName + " токен:", cancelKeyboard());
 
         userStateService.setInputHandler(chatId, new InputHandler() {
             @Override
