@@ -228,4 +228,20 @@ public class TradingServiceTest {
         String msg = TradingService.mapErrorToMessage(ex);
         assertEquals("Неизвестная ошибка", msg);
     }
+
+    @Test
+    @DisplayName("mapErrorToMessage: Должен вернуть сообщение для ошибки 70001")
+    void mapError70001() {
+        RuntimeException ex = new RuntimeException("70001 internal error");
+        String msg = TradingService.mapErrorToMessage(ex);
+        assertTrue(msg.contains("Внутренняя ошибка сервиса"));
+    }
+
+    @Test
+    @DisplayName("mapErrorToMessage: Должен вернуть сообщение для ошибки 70005")
+    void mapError70005() {
+        RuntimeException ex = new RuntimeException("70005 order limit exceeded");
+        String msg = TradingService.mapErrorToMessage(ex);
+        assertTrue(msg.contains("Превышен лимит"));
+    }
 }

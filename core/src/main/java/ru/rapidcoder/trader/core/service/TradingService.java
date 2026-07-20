@@ -133,6 +133,21 @@ public class TradingService {
         if (msg.contains("10012") || msg.contains("order not found")) {
             return "Ордер не найден или уже исполнен";
         }
+        if (msg.contains("70001")) {
+            return "Внутренняя ошибка сервиса. Попробуйте позже или проверьте параметры ордера";
+        }
+        if (msg.contains("70002")) {
+            return "Инструмент не поддерживает данный тип ордера";
+        }
+        if (msg.contains("70003")) {
+            return "Недостаточно лотов для исполнения ордера";
+        }
+        if (msg.contains("70004")) {
+            return "Ордер не может быть исполнен по текущей цене";
+        }
+        if (msg.contains("70005")) {
+            return "Превышен лимит на количество активных ордеров";
+        }
         return "Ошибка: " + msg;
     }
 }
