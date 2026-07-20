@@ -3,124 +3,136 @@ package ru.rapidcoder.trader.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.tinkoff.piapi.contract.v1.*;
-import ru.tinkoff.piapi.core.InstrumentsService;
 import ru.tinkoff.piapi.core.InvestApi;
-import ru.tinkoff.piapi.core.OrdersService;
-import ru.tinkoff.piapi.core.SandboxService;
-import ru.tinkoff.piapi.core.models.Money;
-import ru.tinkoff.piapi.core.models.Portfolio;
-import ru.tinkoff.piapi.core.models.Position;
+import ru.tinkoff.piapi.core.exception.ApiRuntimeException;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class TradingService {
 
     private static final Logger logger = LoggerFactory.getLogger(TradingService.class);
-    // Токен именно для SANDBOX (берется в настройках на сайте tinkoff.ru/invest)
-    private static final String SANDBOX_TOKEN = "t.mfCfVNbET75vydgOJf7JpOWxJFuolgjqDKXkwXsbhZeVB998n5uYgWItZ26R_16skDj71T8blqyO9vo9IhL0Sg";
-    private static TradingService instance;
 
-    private TradingService() {
+    private final InvestApi api;
+
+    public TradingService(InvestApi api) {
+        this.api = api;
     }
 
-    public static synchronized TradingService getTradingService() {
-        if (instance == null) {
-            instance = new TradingService();
-        }
-        return instance;
-    }
-
-    public static void main(String[] args) {
-        // 1. Создаем подключение именно к песочнице (createSandbox)
-        InvestApi api = InvestApi.createSandbox(SANDBOX_TOKEN);
-
-        // Получаем сервисы
-        SandboxService sandboxService = api.getSandboxService();
-        InstrumentsService instrumentsService = api.getInstrumentsService();
-        OrdersService ordersService = api.getOrdersService();
-
+    public CompletableFuture<PostOrderResponse> placeOrder(String accountId, String figi, long lots,
+                                                           Quotation price, OrderDirection direction,
+                                                           OrderType orderType) {
+        String orderId = UUID.randomUUID().toString();
         try {
-            // 2. Открываем новый счет в песочнице
-            // В песочнице может быть несколько счетов, создаем новый для чистоты эксперимента
-            String accountId = sandboxService.openAccountSync();
-            System.out.println("Открыт новый счет в песочнице: " + accountId);
-
-            // 3. Пополняем счет "виртуальными" деньгами
-            // Например, кладем 100 000 рублей
-            MoneyValue payInAmount = MoneyValue.newBuilder()
-                    .setCurrency("rub")
-                    .setUnits(100_000)
-                    .setNano(0)
-                    .build();
-
-            sandboxService.payIn(accountId, payInAmount);
-            System.out.println("Счет пополнен на 100 000 руб.");
-
-            // 4. Ищем инструмент для покупки (например, акции Сбера по тикеру SBER)
-            String ticker = "GAZP"; // Лучше использовать тикер Т-Банка или GAZP, с ними меньше проблем в песочнице
-            List<InstrumentShort> foundInstruments = instrumentsService.findInstrumentSync(ticker);
-
-            String figi = foundInstruments.stream()
-                    // 1. Совпадение по тикеру
-                    .filter(item -> item.getTicker()
-                            .equals(ticker))
-                    // 2. Тип инструмента - Акция ("share")
-                    .filter(item -> item.getInstrumentType()
-                            .equals("share"))
-                    // 3. ВАЖНО: Проверяем, доступна ли торговля через API
-                    .filter(item -> item.getApiTradeAvailableFlag())
-                    // 4. (Опционально) Фильтр по площадке, обычно TQBR - это основной режим торгов Мосбиржи
-                    // .filter(item -> "TQBR".equals(item.getClassCode()))
-                    .findFirst()
-                    .map(InstrumentShort::getFigi)
-                    .orElseThrow(() -> new RuntimeException("Инструмент " + ticker + " доступный для торговли через API не найден"));
-
-            System.out.println("Выбран FIGI: " + figi);
-
-            // Дополнительная проверка: получаем полную информацию об инструменте
-            Instrument instrument = instrumentsService.getInstrumentByFigiSync(figi);
-            if (!instrument.getBuyAvailableFlag()) {
-                throw new RuntimeException("Покупка данного инструмента сейчас недоступна (рынок закрыт или ограничение)");
-            }
-
-            // 5. Выставляем рыночную заявку на покупку (Market Order)
-            // Покупаем 1 лот
-            int quantity = 1;
-            String orderId = UUID.randomUUID()
-                    .toString(); // Уникальный ID заявки (генерируем сами)
-
-            PostOrderResponse orderResponse = ordersService.postOrderSync(figi, quantity, Quotation.getDefaultInstance(), // Для рыночной заявки цена не важна
-                    OrderDirection.ORDER_DIRECTION_BUY, accountId, OrderType.ORDER_TYPE_MARKET, orderId);
-
-            System.out.println("Заявка исполнена. Статус: " + orderResponse.getExecutionReportStatus());
-            System.out.println("Куплено лотов: " + orderResponse.getLotsExecuted());
-
-            // 6. Проверяем портфель
-            Portfolio portfolio = Portfolio.fromResponse(sandboxService.getPortfolioSync(accountId));
-            System.out.println("=== Текущий портфель ===");
-
-            // Выводим рубли
-            Money totalAmount = portfolio.getTotalAmountCurrencies();
-            System.out.println("Остаток валюты: " + totalAmount.getValue() + " " + totalAmount.getCurrency());
-
-            // Выводим позиции
-            List<Position> positions = portfolio.getPositions();
-            for (Position position : positions) {
-                System.out.println("Инструмент (FIGI): " + position.getFigi() + " | Количество: " + position.getQuantity());
-            }
-
-            // 7. (Опционально) Закрываем счет в конце работы
-            List<Account> accounts = sandboxService.getAccounts()
-                    .get();
-            for (Account account : accounts) {
-                //sandboxService.closeAccountSync(account.getId());
-                System.out.println("Счет " + account.getId() + " закрыт.");
-            }
-
-        } catch (Exception e) {
-            System.err.println("Произошла ошибка: " + e.getMessage());
-            e.printStackTrace();
+            return api.getOrdersService()
+                    .postOrder(figi, lots, price, direction, accountId, orderType, orderId);
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка размещения ордера для {}: {}", figi, e.getMessage());
+            return CompletableFuture.failedFuture(e);
         }
+    }
+
+    public CompletableFuture<PostOrderResponse> placeLimitOrder(String accountId, String figi, long lots,
+                                                                Quotation price, OrderDirection direction,
+                                                                TimeInForceType timeInForce) {
+        String orderId = UUID.randomUUID().toString();
+        try {
+            return api.getOrdersService()
+                    .postLimitOrder(figi, lots, price, direction, accountId, timeInForce, orderId);
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка размещения лимитного ордера для {}: {}", figi, e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public CompletableFuture<Instant> cancelOrder(String accountId, String orderId) {
+        try {
+            return api.getOrdersService()
+                    .cancelOrder(accountId, orderId);
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка отмены ордера {}: {}", orderId, e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public CompletableFuture<List<OrderState>> getActiveOrders(String accountId) {
+        try {
+            return api.getOrdersService()
+                    .getOrders(accountId)
+                    .thenApply(orders -> orders.stream()
+                            .filter(o -> o.getExecutionReportStatus() != OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_FILL
+                                    && o.getExecutionReportStatus() != OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_REJECTED
+                                    && o.getExecutionReportStatus() != OrderExecutionReportStatus.EXECUTION_REPORT_STATUS_CANCELLED)
+                            .toList());
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка получения активных ордеров: {}", e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public CompletableFuture<List<OrderState>> getAllOrders(String accountId) {
+        try {
+            return api.getOrdersService()
+                    .getOrders(accountId);
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка получения ордеров: {}", e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public CompletableFuture<OrderState> getOrderState(String accountId, String orderId) {
+        try {
+            return api.getOrdersService()
+                    .getOrderState(accountId, orderId);
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка получения статуса ордера {}: {}", orderId, e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public CompletableFuture<GetOrderPriceResponse> getOrderPrice(String accountId, String figi, long lots,
+                                                                   Quotation price, OrderDirection direction) {
+        try {
+            return api.getOrdersService()
+                    .getOrderPrice(accountId, figi, lots, price, direction);
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка расчёта стоимости ордера для {}: {}", figi, e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public CompletableFuture<GetMaxLotsResponse> getMaxLots(String accountId, String figi, Quotation price) {
+        try {
+            return api.getOrdersService()
+                    .getMaxLots(accountId, figi, price);
+        } catch (ApiRuntimeException e) {
+            logger.error("Ошибка получения макс. лотов для {}: {}", figi, e.getMessage());
+            return CompletableFuture.failedFuture(e);
+        }
+    }
+
+    public static String mapErrorToMessage(Throwable e) {
+        String msg = e.getMessage();
+        if (msg == null) {
+            return "Неизвестная ошибка";
+        }
+        if (msg.contains("10000") || msg.contains("insufficient")) {
+            return "Недостаточно средств на счёте";
+        }
+        if (msg.contains("10006") || msg.contains("invalid lot")) {
+            return "Некорректное количество лотов";
+        }
+        if (msg.contains("10014") || msg.contains("instrument not found")) {
+            return "Инструмент не найден";
+        }
+        if (msg.contains("10015") || msg.contains("account not found")) {
+            return "Счёт не найден";
+        }
+        if (msg.contains("10012") || msg.contains("order not found")) {
+            return "Ордер не найден или уже исполнен";
+        }
+        return "Ошибка: " + msg;
     }
 }

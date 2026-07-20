@@ -13,6 +13,10 @@ import ru.rapidcoder.trader.bot.command.settings.ChangeProductionTokenCommand;
 import ru.rapidcoder.trader.bot.command.settings.ChangeSandboxTokenCommand;
 import ru.rapidcoder.trader.bot.command.settings.SettingsCommand;
 import ru.rapidcoder.trader.bot.command.settings.SwitchTradingModeCommand;
+import ru.rapidcoder.trader.bot.command.trading.OrderCallbackHandler;
+import ru.rapidcoder.trader.bot.command.trading.OrdersCommand;
+import ru.rapidcoder.trader.bot.command.trading.PurchaseCommand;
+import ru.rapidcoder.trader.bot.command.trading.SellCommand;
 import ru.rapidcoder.trader.bot.service.UserStateService;
 import ru.rapidcoder.trader.core.exception.TokenNotFound;
 
@@ -51,6 +55,14 @@ public class MessageHandler {
         commandRegistry.registry(new PriceCommand(bot, BotConstants.CMD_PRICE, "Текущая цена инструмента"));
         commandRegistry.registry(new ChartCommand(bot, BotConstants.CMD_CHART, "Свечной график"));
         commandRegistry.registry(new ChartCommand(bot, BotConstants.CALLBACK_CHART_PERIOD, "Смена периода графика"));
+
+        commandRegistry.registry(new PurchaseCommand(bot, BotConstants.CMD_PURCHASE, "Купить инструмент"));
+        commandRegistry.registry(new SellCommand(bot, BotConstants.CMD_SELL, "Продать инструмент"));
+        commandRegistry.registry(new OrdersCommand(bot, BotConstants.CMD_ORDERS, "Просмотр ордеров"));
+        commandRegistry.registry(new OrdersCommand(bot, BotConstants.CALLBACK_ORDERS_HISTORY, "История ордеров"));
+        commandRegistry.registry(new OrdersCommand(bot, BotConstants.CALLBACK_ORDERS_ACTIVE, "Активные ордера"));
+        commandRegistry.registry(new OrderCallbackHandler(bot, BotConstants.CALLBACK_CONFIRM_ORDER, "Подтверждение ордера"));
+        commandRegistry.registry(new OrderCallbackHandler(bot, BotConstants.CALLBACK_CANCEL_ORDER, "Отмена ордера"));
     }
 
     public void handleCommand(Update update) {
