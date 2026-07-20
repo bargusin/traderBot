@@ -25,9 +25,24 @@ public class TradingService {
                                                            Quotation price, OrderDirection direction,
                                                            OrderType orderType) {
         String orderId = UUID.randomUUID().toString();
+        logger.info("Размещение ордера: accountId={}, figi={}, lots={}, direction={}, orderType={}, orderId={}",
+                accountId, figi, lots, direction, orderType, orderId);
         try {
             return api.getOrdersService()
-                    .postOrder(figi, lots, price, direction, accountId, orderType, orderId);
+                    .postOrder(figi, lots, price, direction, accountId, orderType, orderId)
+                    .handle((response, ex) -> {
+                        if (ex != null) {
+                            logger.error("Ошибка API при размещении ордера: accountId={}, figi={}, ошибка={}",
+                                    accountId, figi, ex.getMessage());
+                        } else {
+                            logger.info("Ордер исполнен: orderId={}, status={}, lotsExecuted={}",
+                                    response.getOrderId(), response.getExecutionReportStatus(), response.getLotsExecuted());
+                        }
+                        if (ex != null) {
+                            throw new java.util.concurrent.CompletionException(ex);
+                        }
+                        return response;
+                    });
         } catch (ApiRuntimeException e) {
             logger.error("Ошибка размещения ордера для {}: {}", figi, e.getMessage());
             return CompletableFuture.failedFuture(e);
@@ -134,11 +149,15 @@ public class TradingService {
             return "Ордер не найден или уже исполнен";
         }
         if (msg.contains("70001")) {
-            return "Внутренняя ошибка сервиса. Возможные причины:\n"
+            return "Внутренняя ошибка сервиса (70001). Возможные причины:\n"
                     + "• Токен не имеет прав на торговлю (read-only)\n"
                     + "• Недостаточно средств на счёте\n"
                     + "• Инструмент недоступен для торговли\n"
-                    + "Проверьте токен и баланс, попробуйте позже";
+                    + "• Неверный ID счета\n\n"
+                    + "Проверьте:\n"
+                    + "1. Токен в /settings должен быть full access\n"
+                    + "2. Аккаунт выбран через /account\n"
+                    + "3. Баланс достаточен для покупки";
         }
         if (msg.contains("70002")) {
             return "Инструмент не поддерживает данный тип ордера";
