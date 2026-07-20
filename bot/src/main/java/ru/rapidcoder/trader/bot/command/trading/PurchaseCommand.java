@@ -17,6 +17,7 @@ import ru.tinkoff.piapi.core.utils.MapperUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,14 +63,22 @@ public class PurchaseCommand extends AbstractCommand {
                     }
                     InstrumentShort instrument = instrumentOpt.get();
 
-                    Quotation priceQuotation = Quotation.getDefaultInstance();
-                    return tradingService.getMaxLots(accountId, instrument.getFigi(), priceQuotation)
-                            .thenCombine(marketDataService.getLastPrices(instrument.getFigi()), (maxLots, prices) -> {
-                                long maxBuyLots = maxLots.getBuyLimits()
-                                        .getBuyMaxLots();
+                    return marketDataService.getLastPrices(instrument.getFigi())
+                            .thenCompose(prices -> {
                                 BigDecimal currentPrice = prices.isEmpty()
                                         ? BigDecimal.ZERO
                                         : MapperUtils.quotationToBigDecimal(prices.get(0).getPrice());
+
+                                return tradingService.getMaxLots(accountId, instrument.getFigi(), MapperUtils.bigDecimalToQuotation(currentPrice))
+                                        .thenApply(maxLots -> Map.entry(maxLots, currentPrice))
+                                        .exceptionally(ex -> {
+                                            logger.warn("getMaxLots failed, using fallback: {}", ex.getMessage());
+                                            return Map.entry(GetMaxLotsResponse.getDefaultInstance(), currentPrice);
+                                        });
+                            })
+                            .thenCompose(entry -> {
+                                long maxBuyLots = entry.getKey().getBuyLimits().getBuyMaxLots();
+                                BigDecimal currentPrice = entry.getValue();
 
                                 String text = headerText + "\n\n"
                                         + "\uD83D\uDCB1 <b>" + instrument.getName() + "</b> (" + instrument.getTicker() + ")\n"
@@ -80,7 +89,7 @@ public class PurchaseCommand extends AbstractCommand {
                                 processMessage(update, text, cancelKeyboard());
                                 userStateService.setInputHandler(chatId,
                                         new QuantityInputHandler(update, chatId, investApi, accountId, instrument, maxBuyLots, currentPrice));
-                                return null;
+                                return CompletableFuture.completedFuture(null);
                             });
                 })
                 .exceptionally(ex -> {
