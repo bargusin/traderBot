@@ -36,6 +36,16 @@ public class HelpCommand extends AbstractCommand {
                 /chart &lt;ticker&gt; — Свечной график инструмента за 30 дней
                   Пример: /chart AAPL
                   Доступны периоды: 1ч, 4ч, 1д, 1н (через inline-кнопки)
+
+                <b>Торговля:</b>
+                /purchase &lt;ticker&gt; — Купить инструмент
+                  Пример: /purchase AAPL
+                  Пошаговый флоу: тикер → количество → подтверждение
+                /sell &lt;ticker&gt; — Продать инструмент
+                  Пример: /sell AAPL
+                  Пошаговый флоу: тикер → количество → подтверждение
+                /orders — Просмотр активных и исполненных ордеров
+                  Активные ордера можно отменить через inline-кнопки
                 """;
 
         processMessage(update, text, backToMainKeyboard());
