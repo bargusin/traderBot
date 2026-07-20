@@ -9,6 +9,7 @@ import ru.rapidcoder.trader.bot.command.BotConstants;
 import ru.rapidcoder.trader.bot.component.InterfaceFactory;
 import ru.rapidcoder.trader.bot.handler.InputHandler;
 import ru.rapidcoder.trader.core.service.MarketDataService;
+import ru.rapidcoder.trader.core.service.TradingMode;
 import ru.rapidcoder.trader.core.service.TradingService;
 import ru.tinkoff.piapi.contract.v1.*;
 import ru.tinkoff.piapi.core.InvestApi;
@@ -150,11 +151,17 @@ public class PurchaseCommand extends AbstractCommand {
             }
 
             BigDecimal totalCost = currentPrice.multiply(BigDecimal.valueOf(lots));
+            TradingMode currentMode = bot.getTradingSessionManager().getCurrentMode(chatId);
+            String modeWarning = currentMode == TradingMode.PRODUCTION
+                    ? "\n\n\uD83D\uDEA8 <b>РЕЖИМ: PRODUCTION</b> — реальная торговля!"
+                    : "";
+
             String text = buildHeaderText(originalUpdate, "\uD83D\uDED2 <b>Подтверждение покупки</b>") + "\n\n"
                     + "\uD83D\uDCB1 <b>" + instrument.getName() + "</b> (" + instrument.getTicker() + ")\n"
                     + "\uD83D\uDCB1 Цена: " + currentPrice.setScale(2, RoundingMode.HALF_UP) + "\n"
                     + "\uD83D\uDCCA Количество: " + lots + " лот(ов)\n"
-                    + "\uD83D\uDCB0 Итого: ~" + totalCost.setScale(2, RoundingMode.HALF_UP) + "\n\n"
+                    + "\uD83D\uDCB0 Итого: ~" + totalCost.setScale(2, RoundingMode.HALF_UP)
+                    + modeWarning + "\n\n"
                     + "\u2757 Подтвердите покупку:";
 
             InlineKeyboardMarkup keyboard = new InlineKeyboardMarkup();
