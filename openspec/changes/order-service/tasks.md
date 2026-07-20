@@ -60,8 +60,8 @@
 
 ## 7. Integration and Build
 
-- [ ] 7.1 Run `./gradlew clean build` — verify all tests pass
-- [ ] 7.2 Verify `/help` shows all trading commands
+- [x] 7.1 Run `./gradlew clean build` — verify all tests pass
+- [x] 7.2 Verify `/help` shows all trading commands
 - [ ] 7.3 Manual smoke test in sandbox: `/purchase` → ticker → qty → confirm → verify order placed
 - [ ] 7.4 Manual smoke test in sandbox: `/sell` → ticker → qty → confirm → verify order placed
 - [ ] 7.5 Manual smoke test in sandbox: `/orders` → verify list shows orders with cancel buttons
