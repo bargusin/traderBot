@@ -27,7 +27,7 @@
 - [x] 3.6 Implement Step 3 - confirm callback: place market BUY order, show result
 - [x] 3.7 Handle cancel at any step via `/cancel` and inline "Cancel" button
 - [x] 3.8 Handle instrument not found and insufficient lots errors
-- [ ] 3.9 Add unit tests for `PurchaseCommand` in `bot/src/test/java/ru/rapidcoder/trader/bot/command/test/PurchaseCommandTest.java`
+- [x] 3.9 Add unit tests for `PurchaseCommand` in `bot/src/test/java/ru/rapidcoder/trader/bot/command/test/PurchaseCommandTest.java`
 
 ## 4. Bot: SellCommand
 
@@ -39,7 +39,7 @@
 - [x] 4.6 Implement Step 3 - confirm callback: place market SELL order, show result
 - [x] 4.7 Handle cancel at any step via `/cancel` and inline "Cancel" button
 - [x] 4.8 Handle instrument not found and insufficient position errors
-- [ ] 4.9 Add unit tests for `SellCommand` in `bot/src/test/java/ru/rapidcoder/trader/bot/command/test/SellCommandTest.java`
+- [x] 4.9 Add unit tests for `SellCommand` in `bot/src/test/java/ru/rapidcoder/trader/bot/command/test/SellCommandTest.java`
 
 ## 5. Bot: OrdersCommand
 
@@ -49,7 +49,7 @@
 - [x] 5.4 Implement "Active" button: switch back to active orders view
 - [x] 5.5 Implement cancel button callback: cancel order, show confirmation, refresh list
 - [x] 5.6 Handle empty state: "No active orders" / "No executed orders"
-- [ ] 5.7 Add unit tests for `OrdersCommand` in `bot/src/test/java/ru/rapidcoder/trader/bot/command/test/OrdersCommandTest.java`
+- [x] 5.7 Add unit tests for `OrdersCommand` in `bot/src/test/java/ru/rapidcoder/trader/bot/command/test/OrdersCommandTest.java`
 
 ## 6. Bot: OrderCallbackHandler
 
