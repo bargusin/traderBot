@@ -39,6 +39,11 @@ public class StartCommand extends AbstractCommand {
         List<List<InlineKeyboardButton>> rows = new ArrayList<>();
 
         rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_PORTFOLIO, BotConstants.CMD_PORTFOLIO)));
+        rows.add(List.of(
+                InterfaceFactory.createButton("\uD83D\uDED2 Купить", BotConstants.CMD_PURCHASE),
+                InterfaceFactory.createButton("\uD83D\uDED2 Продать", BotConstants.CMD_SELL)
+        ));
+        rows.add(List.of(InterfaceFactory.createButton("\uD83D\uDCCB Ордера", BotConstants.CMD_ORDERS)));
         rows.add(List.of(InterfaceFactory.createButton(BotConstants.BUTTON_SETTINGS, BotConstants.CALLBACK_SETTINGS), InterfaceFactory.createButton(BotConstants.BUTTON_HELP, BotConstants.CMD_HELP)));
         keyboard.setKeyboard(rows);
 
